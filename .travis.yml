@@ -10,12 +10,9 @@ go:
 
 os:
  - linux
- - osx
- - windows
 
 arch:
  - amd64
- - arm64
 
 env:
  global:
