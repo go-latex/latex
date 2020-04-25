@@ -53,7 +53,7 @@ func genFonts() {
 
 package fakebackend
 
-import "github.com/go-latex/latex/tex"
+import "github.com/go-latex/latex/font"
 
 func init() {
 	fontsDb = dbFonts{
@@ -62,13 +62,13 @@ func init() {
 	for _, v := range db {
 		fmt.Fprintf(
 			out,
-			"fontKey{symbol: %q, math: %v, font: tex.Font{Name:%q, Size:%v, Type:%q}}:",
+			"fontKey{symbol: %q, math: %v, font: font.Font{Name:%q, Size:%v, Type:%q}}:",
 			v.Symbol, v.Math, v.FontName, v.Size, v.FontType,
 		)
 
 		fmt.Fprintf(
 			out,
-			"tex.Metrics{Advance: %g, Height: %g, Width: %g, XMin: %g, XMax: %g, YMin: %g, YMax: %g, Iceberg: %g, Slanted: %v},\n",
+			"font.Metrics{Advance: %g, Height: %g, Width: %g, XMin: %g, XMax: %g, YMin: %g, YMax: %g, Iceberg: %g, Slanted: %v},\n",
 			v.Metrics.Advance,
 			v.Metrics.Height,
 			v.Metrics.Width,
@@ -187,7 +187,7 @@ func genKerns() {
 
 package fakebackend
 
-import "github.com/go-latex/latex/tex"
+import "github.com/go-latex/latex/font"
 
 func init() {
 	kernsDb = dbKerns{
@@ -196,7 +196,7 @@ func init() {
 	for _, v := range db {
 		fmt.Fprintf(
 			out,
-			"kernKey{font: tex.Font{Name:%q, Size:%v, Type:%q}, s1: %q, s2: %q}: %g,\n",
+			"kernKey{font: font.Font{Name:%q, Size:%v, Type:%q}, s1: %q, s2: %q}: %g,\n",
 			v.FontName, v.Size, v.FontType, v.Symbol1, v.Symbol2, v.Kern,
 		)
 	}

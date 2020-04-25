@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"log"
 	"math"
+
+	"github.com/go-latex/latex/font"
 )
 
 const (
@@ -179,10 +181,10 @@ type Char struct {
 	width   float64
 	height  float64
 	depth   float64
-	metrics Metrics
+	metrics font.Metrics
 
-	be   Backend
-	font Font
+	be   font.Backend
+	font font.Font
 	dpi  float64
 	math bool
 }
@@ -682,7 +684,7 @@ func (lst *VList) vpackDims(width, height, depth *float64, stretch, shrink []flo
 // running in a VList.
 type Rule struct {
 	box Box
-	out Backend
+	out font.Backend
 }
 
 func NewRule(w, h, d float64, state State) *Rule {

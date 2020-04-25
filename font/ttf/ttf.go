@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package ttf provides a truetype font tex Backend
-package ttf
+// Package ttf provides a truetype font Backend
+package ttf // import "github.com/go-latex/latex/font/ttf"
 
 import (
 	"fmt"
 	"io/ioutil"
 	"unicode"
 
+	"github.com/go-latex/latex/font"
 	"github.com/go-latex/latex/internal/tex2unicode"
-	"github.com/go-latex/latex/tex"
 	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font"
+	stdfont "golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
 )
 
@@ -51,7 +51,7 @@ func NewBackend() *Backend {
 }
 
 // RenderGlyphs renders the glyph g at the reference point (x,y).
-func (ttf *Backend) RenderGlyph(x, y float64, font tex.Font, symbol string, dpi float64) {
+func (ttf *Backend) RenderGlyph(x, y float64, font font.Font, symbol string, dpi float64) {
 	panic("not implemented")
 }
 
@@ -61,15 +61,15 @@ func (ttf *Backend) RenderRectFilled(x1, y1, x2, y2 float64) {
 }
 
 // Metrics returns the metrics.
-func (ttf *Backend) Metrics(symbol string, font tex.Font, dpi float64, math bool) tex.Metrics {
-	key := ttfKey{symbol, font, dpi}
+func (ttf *Backend) Metrics(symbol string, fnt font.Font, dpi float64, math bool) font.Metrics {
+	key := ttfKey{symbol, fnt, dpi}
 	val, ok := ttf.glyphs[key]
 	if ok {
 		return val.metrics
 	}
 
 	hinting := hintingNone
-	ft, rn, symbol, fontSize, slanted := ttf.getGlyph(symbol, font, math)
+	ft, rn, symbol, fontSize, slanted := ttf.getGlyph(symbol, fnt, math)
 
 	var (
 		postscript = ft.Name(truetype.NameIDPostscriptName)
@@ -107,11 +107,11 @@ func (ttf *Backend) Metrics(symbol string, font tex.Font, dpi float64, math bool
 
 	offset := 0.0
 	if postscript == "Cmex10" {
-		offset = height/2 + (font.Size / 3 * dpi / 72)
+		offset = height/2 + (fnt.Size / 3 * dpi / 72)
 	}
 
-	me := tex.Metrics{
-		Advance: float64(adv) / 65536 * font.Size / 12,
+	me := font.Metrics{
+		Advance: float64(adv) / 65536 * fnt.Size / 12,
 		Height:  height,
 		Width:   width,
 		XMin:    xmin,
@@ -124,7 +124,7 @@ func (ttf *Backend) Metrics(symbol string, font tex.Font, dpi float64, math bool
 
 	ttf.glyphs[key] = ttfVal{
 		font:       ft,
-		size:       font.Size,
+		size:       fnt.Size,
 		postscript: postscript,
 		metrics:    me,
 		symbolName: symbol,
@@ -136,11 +136,11 @@ func (ttf *Backend) Metrics(symbol string, font tex.Font, dpi float64, math bool
 }
 
 const (
-	hintingNone = font.HintingNone
-	hintingFull = font.HintingFull
+	hintingNone = stdfont.HintingNone
+	hintingFull = stdfont.HintingFull
 )
 
-func (ttf *Backend) getGlyph(symbol string, font tex.Font, math bool) (*truetype.Font, rune, string, float64, bool) {
+func (ttf *Backend) getGlyph(symbol string, font font.Font, math bool) (*truetype.Font, rune, string, float64, bool) {
 	var (
 		fontType = font.Type
 		idx      = tex2unicode.Index(symbol, math)
@@ -181,7 +181,7 @@ func (ttf *Backend) getFont(fontType string) *truetype.Font {
 
 // UnderlineThickness returns the line thickness that matches the given font.
 // It is used as a base unit for drawing lines such as in a fraction or radical.
-func (ttf *Backend) UnderlineThickness(font tex.Font, dpi float64) float64 {
+func (ttf *Backend) UnderlineThickness(font font.Font, dpi float64) float64 {
 	// theoretically, we could grab the underline thickness from the font
 	// metrics.
 	// but that information is just too un-reliable.
@@ -190,13 +190,13 @@ func (ttf *Backend) UnderlineThickness(font tex.Font, dpi float64) float64 {
 }
 
 // Kern returns the kerning distance between two symbols.
-func (ttf *Backend) Kern(ft1 tex.Font, sym1 string, ft2 tex.Font, sym2 string, dpi float64) float64 {
+func (ttf *Backend) Kern(ft1 font.Font, sym1 string, ft2 font.Font, sym2 string, dpi float64) float64 {
 	panic("not implemented")
 }
 
 type ttfKey struct {
 	symbol string
-	font   tex.Font
+	font   font.Font
 	dpi    float64
 }
 
@@ -204,7 +204,7 @@ type ttfVal struct {
 	font       *truetype.Font
 	size       float64
 	postscript string
-	metrics    tex.Metrics
+	metrics    font.Metrics
 	symbolName string
 	rune       rune
 	glyph      truetype.Index
@@ -212,5 +212,5 @@ type ttfVal struct {
 }
 
 var (
-	_ tex.Backend = (*Backend)(nil)
+	_ font.Backend = (*Backend)(nil)
 )

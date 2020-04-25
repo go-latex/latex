@@ -6,10 +6,6 @@ package tex
 
 import "testing"
 
-func (ship *Ship) State() (s int, v, h float64) {
-	return ship.cur.s, ship.cur.v, ship.cur.h
-}
-
 func TestDetermineOrder(t *testing.T) {
 	for _, tc := range []struct {
 		totals []float64

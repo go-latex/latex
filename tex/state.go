@@ -4,13 +4,17 @@
 
 package tex
 
+import (
+	"github.com/go-latex/latex/font"
+)
+
 type State struct {
-	be   Backend
-	Font Font
+	be   font.Backend
+	Font font.Font
 	DPI  float64
 }
 
-func NewState(be Backend, font Font, dpi float64) State {
+func NewState(be font.Backend, font font.Font, dpi float64) State {
 	return State{
 		be:   be,
 		Font: font,
@@ -18,10 +22,4 @@ func NewState(be Backend, font Font, dpi float64) State {
 	}
 }
 
-func (state State) Backend() Backend { return state.be }
-
-type Font struct {
-	Name string
-	Type string
-	Size float64
-}
+func (state State) Backend() font.Backend { return state.be }

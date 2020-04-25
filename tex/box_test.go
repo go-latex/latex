@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package tex_test
+package tex
 
 import (
 	"math"
 	"testing"
 
-	. "github.com/go-latex/latex/tex"
-	"github.com/go-latex/latex/tex/internal/fakebackend"
+	"github.com/go-latex/latex/font"
+	"github.com/go-latex/latex/internal/fakebackend"
 )
 
 func TestBox(t *testing.T) {
 	const dpi = 72
 	be := fakebackend.New()
-	state := NewState(be, Font{
+	state := NewState(be, font.Font{
 		Name: "default",
 		Size: 12,
 		Type: "rm",
@@ -413,7 +413,7 @@ func TestBox(t *testing.T) {
 func TestShip(t *testing.T) {
 	const dpi = 72
 	be := fakebackend.New()
-	state := NewState(be, Font{
+	state := NewState(be, font.Font{
 		Name: "default",
 		Size: 12,
 		Type: "rm",
@@ -523,7 +523,9 @@ func TestShip(t *testing.T) {
 			var ship Ship
 			ship.Call(0, 0, tc.node)
 			var (
-				s, v, h = ship.State()
+				s = ship.cur.s
+				v = ship.cur.v
+				h = ship.cur.h
 			)
 
 			if got, want := s, tc.s; got != want {

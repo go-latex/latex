@@ -9,8 +9,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-latex/latex/tex"
-	"github.com/go-latex/latex/tex/internal/fakebackend"
+	"github.com/go-latex/latex/font"
+	"github.com/go-latex/latex/internal/fakebackend"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font/gofont/goitalic"
 	"golang.org/x/image/font/gofont/goregular"
@@ -45,7 +45,7 @@ func TestDejaVuBackend(t *testing.T) {
 			true,
 			false,
 		} {
-			for _, descr := range []tex.Font{
+			for _, descr := range []font.Font{
 				{Name: "default", Size: 12, Type: "rm"},
 				//{Name: "default", Size: 10, Type: "rm"},
 				//{Name: "it", Size: 12, Type: "it"},
@@ -87,17 +87,17 @@ func newBackend() *Backend {
 func TestGofontBackend(t *testing.T) {
 	be := newBackend()
 	{
-		font := tex.Font{Name: "default", Size: 12, Type: "regular"}
-		got := be.Metrics("A", font, 72, true)
-		want := tex.Metrics{Advance: 8.00390625, Height: 8.671875, Width: 7.75, XMin: 0.109375, XMax: 7.859375, YMin: 0, YMax: 8.671875, Iceberg: 8.671875, Slanted: false}
+		fnt := font.Font{Name: "default", Size: 12, Type: "regular"}
+		got := be.Metrics("A", fnt, 72, true)
+		want := font.Metrics{Advance: 8.00390625, Height: 8.671875, Width: 7.75, XMin: 0.109375, XMax: 7.859375, YMin: 0, YMax: 8.671875, Iceberg: 8.671875, Slanted: false}
 		if got != want {
 			t.Fatalf("got=%#v\nwant=%#v", got, want)
 		}
 	}
 	{
-		font := tex.Font{Name: "it", Size: 12, Type: "it"}
-		got := be.Metrics("A", font, 72, true)
-		want := tex.Metrics{Advance: 8.1328125, Height: 8.671875, Width: 7.75, XMin: 0.171875, XMax: 7.921875, YMin: 0, YMax: 8.671875, Iceberg: 8.671875, Slanted: true}
+		fnt := font.Font{Name: "it", Size: 12, Type: "it"}
+		got := be.Metrics("A", fnt, 72, true)
+		want := font.Metrics{Advance: 8.1328125, Height: 8.671875, Width: 7.75, XMin: 0.171875, XMax: 7.921875, YMin: 0, YMax: 8.671875, Iceberg: 8.671875, Slanted: true}
 		if got != want {
 			t.Fatalf("got=%#v\nwant=%#v", got, want)
 		}

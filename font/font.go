@@ -2,7 +2,15 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package tex
+// Package font holds types to handle and abstract away font management.
+package font
+
+// Font represents a font.
+type Font struct {
+	Name string  // Name is the LaTeX name of the font (regular, default, it, ...)
+	Type string  // Type is the LaTeX class of the font (it, rm, ...)
+	Size float64 // Size is the font size in points.
+}
 
 // Backend is the interface that allows to render math expressions.
 type Backend interface {
@@ -23,6 +31,7 @@ type Backend interface {
 	UnderlineThickness(font Font, dpi float64) float64
 }
 
+// Metrics represents the metrics of a glyph in a given font.
 type Metrics struct {
 	Advance float64 // Advance distance of the glyph, in points.
 	Height  float64 // Height of the glyph in points.

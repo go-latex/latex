@@ -3,17 +3,17 @@
 // license that can be found in the LICENSE file.
 
 // Package fakebackend provides a fake tex Backend for testing purposes.
-package fakebackend
+package fakebackend // import "github.com/go-latex/latex/internal/fakebackend"
 
 //go:generate go run ./gen-fakebackend.go
 
 import (
 	"fmt"
 
-	"github.com/go-latex/latex/tex"
+	"github.com/go-latex/latex/font"
 )
 
-type dbFonts map[fontKey]tex.Metrics
+type dbFonts map[fontKey]font.Metrics
 type dbKerns map[kernKey]float64
 
 var (
@@ -34,7 +34,7 @@ func New() *Backend {
 }
 
 // RenderGlyphs renders the glyph g at the reference point (x,y).
-func (be *Backend) RenderGlyph(x, y float64, font tex.Font, symbol string, dpi float64) {
+func (be *Backend) RenderGlyph(x, y float64, font font.Font, symbol string, dpi float64) {
 	//panic("not implemented")
 }
 
@@ -44,7 +44,7 @@ func (be *Backend) RenderRectFilled(x1, y1, x2, y2 float64) {
 }
 
 // Metrics returns the metrics.
-func (be *Backend) Metrics(symbol string, font tex.Font, dpi float64, math bool) tex.Metrics {
+func (be *Backend) Metrics(symbol string, font font.Font, dpi float64, math bool) font.Metrics {
 	if dpi != 72 {
 		panic(fmt.Errorf("no pre-generated metrics for dpi=%v", dpi))
 	}
@@ -60,7 +60,7 @@ func (be *Backend) Metrics(symbol string, font tex.Font, dpi float64, math bool)
 
 // UnderlineThickness returns the line thickness that matches the given font.
 // It is used as a base unit for drawing lines such as in a fraction or radical.
-func (be *Backend) UnderlineThickness(font tex.Font, dpi float64) float64 {
+func (be *Backend) UnderlineThickness(font font.Font, dpi float64) float64 {
 	// theoretically, we could grab the underline thickness from the font
 	// metrics.
 	// but that information is just too un-reliable.
@@ -69,7 +69,7 @@ func (be *Backend) UnderlineThickness(font tex.Font, dpi float64) float64 {
 }
 
 // Kern returns the kerning distance between two symbols.
-func (be *Backend) Kern(ft1 tex.Font, sym1 string, ft2 tex.Font, sym2 string, dpi float64) float64 {
+func (be *Backend) Kern(ft1 font.Font, sym1 string, ft2 font.Font, sym2 string, dpi float64) float64 {
 	if ft1 != ft2 {
 		panic(fmt.Errorf("kern w/ different fonts not supported (ft1=%#v, ft2=%#v, sym1=%q, sym2=%q)", ft1, ft2, sym1, sym2))
 	}
@@ -86,16 +86,16 @@ func (be *Backend) Kern(ft1 tex.Font, sym1 string, ft2 tex.Font, sym2 string, dp
 
 type fontKey struct {
 	symbol string
-	font   tex.Font
+	font   font.Font
 	math   bool
 }
 
 type kernKey struct {
 	//f1, f2 tex.Font
-	font   tex.Font
+	font   font.Font
 	s1, s2 string
 }
 
 var (
-	_ tex.Backend = (*Backend)(nil)
+	_ font.Backend = (*Backend)(nil)
 )
