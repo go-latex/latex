@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:generate stringer -type Kind
-
+// Package token defines constants representing the lexical tokens of
+// LaTeX documents.
 package token // import "github.com/go-latex/latex/token"
+
+//go:generate stringer -type Kind
 
 import (
 	"go/token"
