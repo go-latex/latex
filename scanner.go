@@ -81,25 +81,14 @@ func (s *texScanner) scan() token.Token {
 			Text: line,
 		}
 
-	case '$':
+	case '$', '_', '=', '<', '>', '^', '/', '*', '-', '+',
+		'!', '?', '\'', ':':
 		return token.Token{
-			Kind: token.Dollar,
+			Kind: token.Symbol,
 			Pos:  pos,
 			Text: s.sc.TokenText(),
 		}
 
-	case '_':
-		return token.Token{
-			Kind: token.Underscore,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '=':
-		return token.Token{
-			Kind: token.Equal,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
 	case '[':
 		return token.Token{
 			Kind: token.Lbrack,
@@ -133,72 +122,6 @@ func (s *texScanner) scan() token.Token {
 	case ')':
 		return token.Token{
 			Kind: token.Rparen,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '<':
-		return token.Token{
-			Kind: token.Lt,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '>':
-		return token.Token{
-			Kind: token.Gt,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '^':
-		return token.Token{
-			Kind: token.Hat,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '/':
-		return token.Token{
-			Kind: token.Div,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '*':
-		return token.Token{
-			Kind: token.Mul,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '-':
-		return token.Token{
-			Kind: token.Sub,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '+':
-		return token.Token{
-			Kind: token.Add,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '!':
-		return token.Token{
-			Kind: token.Not,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '?':
-		return token.Token{
-			Kind: token.Other,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case '\'':
-		return token.Token{
-			Kind: token.Backslash,
-			Pos:  pos,
-			Text: s.sc.TokenText(),
-		}
-	case ':':
-		return token.Token{
-			Kind: token.Colon,
 			Pos:  pos,
 			Text: s.sc.TokenText(),
 		}

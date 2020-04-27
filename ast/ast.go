@@ -97,6 +97,7 @@ func (x *Ident) isNode()        {}
 //  $f(x) \doteq \sqrt[n]{x}$
 //  \[ x^n + y^n = z^n \]
 type MathExpr struct {
+	Delim string    // delimiter used for this math expression.
 	Left  token.Pos // position of opening '$', '\(', '\[' or '\begin{math}'
 	List  []Node
 	Right token.Pos // position of closing '$', '\)', '\]' or '\end{math}'
@@ -106,14 +107,14 @@ func (x *MathExpr) isNode()        {}
 func (x *MathExpr) Pos() token.Pos { return x.Left }
 func (x *MathExpr) End() token.Pos { return x.Right }
 
-type Var struct {
-	VarPos token.Pos
-	Name   string
+type Word struct {
+	WordPos token.Pos
+	Text    string
 }
 
-func (x *Var) isNode()        {}
-func (x *Var) Pos() token.Pos { return x.VarPos }
-func (x *Var) End() token.Pos { return token.Pos(int(x.VarPos) + len(x.Name)) }
+func (x *Word) isNode()        {}
+func (x *Word) Pos() token.Pos { return x.WordPos }
+func (x *Word) End() token.Pos { return token.Pos(int(x.WordPos) + len(x.Text)) }
 
 type Literal struct {
 	LitPos token.Pos
@@ -124,23 +125,38 @@ func (x *Literal) isNode()        {}
 func (x *Literal) Pos() token.Pos { return x.LitPos }
 func (x *Literal) End() token.Pos { return token.Pos(int(x.LitPos) + len(x.Text)) }
 
-type Op struct {
-	OpPos token.Pos
-	Text  string
+type Symbol struct {
+	SymPos token.Pos
+	Text   string
 }
 
-func (x *Op) isNode()        {}
-func (x *Op) Pos() token.Pos { return x.OpPos }
-func (x *Op) End() token.Pos { return token.Pos(int(x.OpPos) + len(x.Text)) }
+func (x *Symbol) isNode()        {}
+func (x *Symbol) Pos() token.Pos { return x.SymPos }
+func (x *Symbol) End() token.Pos { return token.Pos(int(x.SymPos) + len(x.Text)) }
 
-type Super struct {
+// Sub is a subscript node.
+//
+// e.g.: \sum_{i=0}
+type Sub struct {
+	UnderPos token.Pos
+	Node     Node
+}
+
+func (x *Sub) isNode()        {}
+func (x *Sub) Pos() token.Pos { return x.UnderPos }
+func (x *Sub) End() token.Pos { return x.Node.End() }
+
+// Sup is a superscript node.
+//
+// e.g.: \sum^{n}
+type Sup struct {
 	HatPos token.Pos
 	Node   Node
 }
 
-func (x *Super) isNode()        {}
-func (x *Super) Pos() token.Pos { return x.HatPos }
-func (x *Super) End() token.Pos { return x.Node.End() }
+func (x *Sup) isNode()        {}
+func (x *Sup) Pos() token.Pos { return x.HatPos }
+func (x *Sup) End() token.Pos { return x.Node.End() }
 
 // Print prints node to w.
 func Print(o io.Writer, node Node) {
@@ -157,6 +173,7 @@ func Print(o io.Writer, node Node) {
 
 	case *Ident:
 		fmt.Fprintf(o, "ast.Ident{%q}", node.Name)
+
 	case *Macro:
 		fmt.Fprintf(o, "ast.Macro{%q", node.Name.Name)
 		switch len(node.Args) {
@@ -196,8 +213,8 @@ func Print(o io.Writer, node Node) {
 			Print(o, n)
 		}
 		fmt.Fprintf(o, "]")
-	case *Var:
-		fmt.Fprintf(o, "ast.Var{%q}", node.Name)
+	case *Word:
+		fmt.Fprintf(o, "ast.Word{%q}", node.Text)
 	case *Literal:
 		fmt.Fprintf(o, "ast.Lit{%q}", node.Text)
 	case List:
@@ -210,13 +227,24 @@ func Print(o io.Writer, node Node) {
 		}
 		fmt.Fprintf(o, "}")
 
-	case *Super:
-		fmt.Fprintf(o, "ast.Super{")
+	case *Sub:
+		fmt.Fprintf(o, "ast.Sub{")
 		Print(o, node.Node)
 		fmt.Fprintf(o, "}")
 
-	case *Op:
-		fmt.Fprintf(o, "ast.Op{%q}", node.Text)
+	case *Sup:
+		fmt.Fprintf(o, "ast.Sup{")
+		Print(o, node.Node)
+		fmt.Fprintf(o, "}")
+
+	case *Symbol:
+		fmt.Fprintf(o, "ast.Symbol{%q}", node.Text)
+
+		//	case *Op:
+		//		fmt.Fprintf(o, "ast.Op{%q}", node.Text)
+
+	case nil:
+		fmt.Fprintf(o, "<nil>")
 
 	default:
 		panic(fmt.Errorf("unknown node %T", node))
@@ -230,8 +258,9 @@ var (
 	_ Node = (*Macro)(nil)
 	_ Node = (*MathExpr)(nil)
 	_ Node = (*OptArg)(nil)
-	_ Node = (*Var)(nil)
+	_ Node = (*Word)(nil)
 	_ Node = (*Literal)(nil)
-	_ Node = (*Super)(nil)
-	_ Node = (*Op)(nil)
+	_ Node = (*Sup)(nil)
+	_ Node = (*Sub)(nil)
+	_ Node = (*Symbol)(nil)
 )

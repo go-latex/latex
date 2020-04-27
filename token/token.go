@@ -23,25 +23,13 @@ const (
 	Space
 	Word
 	Number
-	Dollar
+	Symbol // +,-,?,>,>=,...
 	Lbrace
 	Rbrace
 	Lbrack
 	Rbrack
-	Equal
-	Underscore
 	Lparen
 	Rparen
-	Lt
-	Gt
-	Hat
-	Div
-	Mul
-	Sub
-	Add
-	Not
-	Colon
-	Backslash
 	Other
 	Verbatim
 	EOF

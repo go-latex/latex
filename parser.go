@@ -78,12 +78,17 @@ func (p *parser) parseNode(tok token.Token) ast.Node {
 		return p.parseWord(tok)
 	case token.Number:
 		return p.parseNumber(tok)
-	case token.Dollar:
-		return p.parseMathExpr(tok)
-	case token.Hat:
-		return p.parseHat(tok)
-	case token.Sub, token.Add, token.Mul, token.Div, token.Equal:
-		return p.parseOp(tok)
+	case token.Symbol:
+		switch tok.Text {
+		case "$":
+			return p.parseMathExpr(tok)
+		case "^":
+			return p.parseSup(tok)
+		case "_":
+			return p.parseSub(tok)
+		default:
+			return p.parseSymbol(tok)
+		}
 	case token.Lbrace:
 		switch p.state {
 		case mathState:
@@ -97,7 +102,7 @@ func (p *parser) parseNode(tok token.Token) ast.Node {
 			panic("not implemented: " + tok.String())
 		}
 	default:
-		panic("impossible: " + tok.String())
+		panic(fmt.Errorf("impossible: %v (%v)", tok, tok.Kind))
 	}
 }
 
@@ -109,12 +114,27 @@ func (p *parser) parseMathExpr(tok token.Token) ast.Node {
 	}()
 
 	math := &ast.MathExpr{
-		Left: tok.Pos,
+		Delim: tok.Text,
+		Left:  tok.Pos,
 	}
+	var end string
+	switch tok.Text {
+	case "$":
+		end = "$"
+	case `\(`:
+		end = `\)`
+	case `\[`:
+		end = `\]`
+	case `\begin`:
+		panic("not implemented")
+	default:
+		panic(fmt.Errorf("opening math-expression delimiter %q not supported", tok.Text))
+	}
+
 loop:
 	for p.s.Next() {
-		switch p.s.tok.Kind {
-		case token.Dollar:
+		switch p.s.tok.Text {
+		case end:
 			math.Right = p.s.tok.Pos
 			break loop
 		default:
@@ -140,9 +160,9 @@ func (p *parser) parseMacro(tok token.Token) ast.Node {
 }
 
 func (p *parser) parseWord(tok token.Token) ast.Node {
-	return &ast.Var{
-		VarPos: tok.Pos,
-		Name:   tok.Text,
+	return &ast.Word{
+		WordPos: tok.Pos,
+		Text:    tok.Text,
 	}
 }
 
@@ -206,8 +226,8 @@ loop:
 func (p *parser) parseVerbatimMacroArg(macro *ast.Macro) {
 }
 
-func (p *parser) parseHat(tok token.Token) ast.Node {
-	hat := &ast.Super{
+func (p *parser) parseSup(tok token.Token) ast.Node {
+	hat := &ast.Sup{
 		HatPos: tok.Pos,
 	}
 
@@ -236,10 +256,40 @@ func (p *parser) parseHat(tok token.Token) ast.Node {
 	return hat
 }
 
-func (p *parser) parseOp(tok token.Token) ast.Node {
-	return &ast.Op{
-		OpPos: tok.Pos,
-		Text:  tok.Text,
+func (p *parser) parseSub(tok token.Token) ast.Node {
+	sub := &ast.Sub{
+		UnderPos: tok.Pos,
+	}
+
+	switch next := p.s.sc.Peek(); next {
+	case '{':
+		p.expect('{')
+		var list ast.List
+	loop:
+		for p.s.Next() {
+			switch p.s.tok.Kind {
+			case token.Rbrace:
+				break loop
+			default:
+				node := p.parseNode(p.s.tok)
+				if node == nil {
+					continue
+				}
+				list = append(list, node)
+			}
+		}
+		sub.Node = list
+	default:
+		sub.Node = p.parseNode(p.next())
+	}
+
+	return sub
+}
+
+func (p *parser) parseSymbol(tok token.Token) ast.Node {
+	return &ast.Symbol{
+		SymPos: tok.Pos,
+		Text:   tok.Text,
 	}
 }
 
