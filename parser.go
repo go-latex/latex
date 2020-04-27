@@ -101,6 +101,18 @@ func (p *parser) parseNode(tok token.Token) ast.Node {
 		default:
 			panic("not implemented: " + tok.String())
 		}
+	case token.Space:
+		switch p.state {
+		case mathState:
+			return nil
+		default:
+			return p.parseSymbol(tok)
+		}
+
+	case token.Lparen, token.Rparen,
+		token.Lbrack, token.Rbrack:
+		return p.parseSymbol(tok)
+
 	default:
 		panic(fmt.Errorf("impossible: %v (%v)", tok, tok.Kind))
 	}

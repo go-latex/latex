@@ -31,6 +31,7 @@ func newScanner(r io.Reader) *texScanner {
 	sc.sc.IsIdentRune = func(ch rune, i int) bool {
 		return unicode.IsLetter(ch) //|| unicode.IsDigit(ch) && i > 0
 	}
+	sc.sc.Whitespace = 1<<'\t' | 1<<'\n' | 1<<'\r'
 	return sc
 }
 
@@ -51,8 +52,8 @@ func (s *texScanner) Next() bool {
 }
 
 func (s *texScanner) scan() token.Token {
-	pos := s.pos()
 	s.next()
+	pos := s.pos()
 	switch s.r {
 	case scanner.Ident:
 		return token.Token{
@@ -68,11 +69,18 @@ func (s *texScanner) scan() token.Token {
 			return token.Token{
 				Kind: token.Space,
 				Pos:  pos,
-				Text: ` `,
+				Text: `\ `,
 			}
 		default:
 			return s.scanMacro()
 		}
+	case ' ':
+		return token.Token{
+			Kind: token.Space,
+			Pos:  pos,
+			Text: ` `,
+		}
+
 	case '%':
 		line := s.scanComment()
 		return token.Token{
@@ -196,5 +204,5 @@ func (s *texScanner) expect(want rune) {
 }
 
 func (s *texScanner) pos() token.Pos {
-	return token.Pos(s.sc.Pos().Offset)
+	return token.Pos(s.sc.Position.Offset)
 }

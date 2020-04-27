@@ -6,6 +6,7 @@
 package latex // import "github.com/go-latex/latex"
 
 import (
+	"reflect"
 	"strings"
 	"testing"
 
@@ -25,6 +26,7 @@ func TestParser(t *testing.T) {
 			input: `hello world`,
 			want: ast.List{
 				&ast.Word{Text: "hello"},
+				&ast.Symbol{Text: " "},
 				&ast.Word{Text: "world"},
 			},
 		},
@@ -32,7 +34,9 @@ func TestParser(t *testing.T) {
 			input: `empty equation $$`,
 			want: ast.List{
 				&ast.Word{Text: "empty"},
+				&ast.Symbol{Text: " "},
 				&ast.Word{Text: "equation"},
+				&ast.Symbol{Text: " "},
 				&ast.MathExpr{
 					Delim: "$",
 				},
@@ -335,6 +339,7 @@ func TestParser(t *testing.T) {
 						},
 					},
 				},
+				&ast.Symbol{Text: " "},
 				&ast.Macro{
 					Name: &ast.Ident{Name: `\textbf`},
 					Args: []ast.Node{
@@ -345,9 +350,12 @@ func TestParser(t *testing.T) {
 						},
 					},
 				},
+				&ast.Symbol{Text: " "},
 				&ast.Word{Text: "Dummy"},
+				&ast.Symbol{Text: " "},
 				&ast.Symbol{Text: "-"},
 				&ast.Symbol{Text: "-"},
+				&ast.Symbol{Text: " "},
 				&ast.MathExpr{
 					List: []ast.Node{
 						&ast.Macro{
@@ -366,6 +374,7 @@ func TestParser(t *testing.T) {
 					},
 				},
 				&ast.Word{Text: "TeV"},
+				&ast.Symbol{Text: " "},
 				&ast.MathExpr{
 					List: []ast.Node{
 						&ast.Macro{
@@ -470,6 +479,150 @@ func TestParser(t *testing.T) {
 
 			if got.String() != want.String() {
 				t.Fatalf("invalid ast:\ngot: %v\nwant:%v", got, want)
+			}
+		})
+	}
+
+}
+
+func TestTokenPos(t *testing.T) {
+	for _, tc := range []struct {
+		input string
+		want  ast.Node
+	}{
+		{
+			input: `hello`,
+			want:  ast.List{&ast.Word{WordPos: 0, Text: "hello"}},
+		},
+		{
+			input: `hello world`,
+			want: ast.List{
+				&ast.Word{Text: "hello"},
+				&ast.Symbol{Text: " ", SymPos: 5},
+				&ast.Word{Text: "world", WordPos: 6},
+			},
+		},
+		{
+			input: `empty equation $$`,
+			want: ast.List{
+				&ast.Word{Text: "empty"},
+				&ast.Symbol{Text: " ", SymPos: 5},
+				&ast.Word{Text: "equation", WordPos: 6},
+				&ast.Symbol{Text: " ", SymPos: 14},
+				&ast.MathExpr{
+					Delim: "$",
+					Left:  15,
+					Right: 16,
+				},
+			},
+		},
+		{
+			input: `$+10x$`,
+			want: ast.List{
+				&ast.MathExpr{
+					Delim: "$",
+					Left:  0,
+					List: []ast.Node{
+						&ast.Symbol{Text: "+", SymPos: 1},
+						&ast.Literal{Text: "10", LitPos: 2},
+						&ast.Word{Text: "x", WordPos: 4},
+					},
+					Right: 5,
+				},
+			},
+		},
+		{
+			input: `$\sqrt{2x\pi}$`,
+			want: ast.List{
+				&ast.MathExpr{
+					Delim: "$",
+					Left:  0,
+					List: []ast.Node{
+						&ast.Macro{
+							Name: &ast.Ident{Name: `\sqrt`, NamePos: 1},
+							Args: []ast.Node{
+								&ast.Arg{
+									Lbrace: 6,
+									List: []ast.Node{
+										&ast.Literal{
+											Text:   "2",
+											LitPos: 7,
+										},
+										&ast.Word{
+											Text:    "x",
+											WordPos: 8,
+										},
+										&ast.Macro{Name: &ast.Ident{
+											Name:    `\pi`,
+											NamePos: 9,
+										}},
+									},
+									Rbrace: 12,
+								},
+							},
+						},
+					},
+					Right: 13,
+				},
+			},
+		},
+		{
+			input: `$e^\pi$`,
+			want: ast.List{
+				&ast.MathExpr{
+					Delim: "$",
+					Left:  0,
+					List: []ast.Node{
+						&ast.Word{Text: "e", WordPos: 1},
+						&ast.Sup{
+							HatPos: 2,
+							Node: &ast.Macro{
+								Name: &ast.Ident{Name: `\pi`, NamePos: 3},
+							},
+						},
+					},
+					Right: 6,
+				},
+			},
+		},
+		//	{ // FIXME(sbinet): not ready
+		//		input: `\[x =3\]`,
+		//		want:  nil,
+		//	},
+		//	{ // FIXME(sbinet): not ready
+		//		input: `\(x =3\)`,
+		//		want:  nil,
+		//	},
+		//	{ // FIXME(sbinet): not ready
+		//		input: `\begin{equation}x=3\end{equation}`,
+		//		want: nil,
+		//	},
+		{
+			input: `$x_i$`,
+			want: ast.List{
+				&ast.MathExpr{
+					Delim: "$",
+					Left:  0,
+					List: []ast.Node{
+						&ast.Word{Text: "x", WordPos: 1},
+						&ast.Sub{
+							UnderPos: 2,
+							Node:     &ast.Word{Text: "i", WordPos: 3},
+						},
+					},
+					Right: 4,
+				},
+			},
+		},
+	} {
+		t.Run("", func(t *testing.T) {
+			node, err := ParseExpr(tc.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if got, want := node, tc.want; !reflect.DeepEqual(got, want) {
+				t.Fatalf("invalid positions:\ngot= %v\nwant=%v", got, want)
 			}
 		})
 	}

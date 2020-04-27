@@ -61,3 +61,20 @@ func TestIndex(t *testing.T) {
 		})
 	}
 }
+
+func TestHasSymbol(t *testing.T) {
+	for _, tc := range []struct {
+		symbol string
+		want   bool
+	}{
+		{`alpha`, true},
+		{`\alpha`, false},
+	} {
+		t.Run(tc.symbol, func(t *testing.T) {
+			got := HasSymbol(tc.symbol)
+			if got != tc.want {
+				t.Fatalf("got=%v, want=%v", got, tc.want)
+			}
+		})
+	}
+}

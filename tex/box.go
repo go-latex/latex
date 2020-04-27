@@ -365,7 +365,7 @@ func ListOf(elements []Node) *List {
 // determineOrder determines the highest order of glue used by the members
 // of a List.
 //
-// used by vpack and hpack.
+// used by VPack and HPack.
 func determineOrder(totals []float64) int {
 	for i := len(totals) - 1; i >= 0; i-- {
 		if totals[i] != 0 {
@@ -469,7 +469,7 @@ func HListOf(elements []Node, doKern bool) *HList {
 		width      = 0
 		additional = true
 	)
-	lst.hpack(width, additional)
+	lst.HPack(width, additional)
 	return lst
 }
 
@@ -503,18 +503,18 @@ func (lst *HList) kern() {
 	lst.lst.children = children
 }
 
-// hpack computes the dimensions of the resulting boxes, and adjusts the glue
+// HPack computes the dimensions of the resulting boxes, and adjusts the glue
 // if one of those dimensions is pre-specified.
 //
 // The computed sizes normally enclose all of the material inside the new box;
 // but some items may stick out if negative glue is used, if the box is
 // overfull, or if a `\vbox` includes other boxes that have been shifted left.
 //
-// If additional is false, hpack will produce a box whose width is exactly as
+// If additional is false, HPack will produce a box whose width is exactly as
 // wide as the given 'width'.
-// Otherwise, hpack will produce a box with the natural width of the contents,
+// Otherwise, HPack will produce a box with the natural width of the contents,
 // plus the given 'width'.
-func (lst *HList) hpack(width float64, additional bool) {
+func (lst *HList) HPack(width float64, additional bool) {
 	var (
 		h float64
 		d float64
@@ -570,6 +570,7 @@ func (lst *HList) Nodes() []Node    { return lst.lst.Nodes() }
 func (lst *HList) GlueOrder() int   { return lst.lst.GlueOrder() }
 func (lst *HList) GlueSign() int    { return lst.lst.GlueSign() }
 func (lst *HList) GlueSet() float64 { return lst.lst.GlueSet() }
+func (lst *HList) Shift() float64   { return lst.lst.shift }
 
 func (lst *HList) hpackDims(width, height, depth *float64, stretch, shrink []float64) {
 	lst.lst.hpackDims(width, height, depth, stretch, shrink)
@@ -584,6 +585,8 @@ type VList struct {
 	lst List
 }
 
+func (lst *VList) SetShift(s float64) { lst.lst.shift = s }
+
 func VListOf(elements []Node) *VList {
 	lst := &VList{lst: *ListOf(elements)}
 	var (
@@ -591,18 +594,18 @@ func VListOf(elements []Node) *VList {
 		additional = true
 		max        = math.Inf(+1)
 	)
-	lst.vpack(height, additional, max)
+	lst.VPack(height, additional, max)
 	return lst
 }
 
-// vpack computes the dimensions of the resulting boxes, and adjusts the
+// VPack computes the dimensions of the resulting boxes, and adjusts the
 // glue if one of those dimensions is pre-specified.
 //
-// If additional is false, vpack will produce a box whose height is exactly as
+// If additional is false, VPack will produce a box whose height is exactly as
 // tall as the given 'height'.
-// Otherwise, vpack will produce a box with the natural height of the contents,
+// Otherwise, VPack will produce a box with the natural height of the contents,
 // plus the given 'height'.
-func (lst *VList) vpack(height float64, additional bool, l float64) {
+func (lst *VList) VPack(height float64, additional bool, l float64) {
 	var (
 		w float64
 		d float64
@@ -905,6 +908,52 @@ type SubSuperCluster struct {
 	nucleus interface{} // FIXME
 	sub     interface{} // FIXME
 	super   interface{} // FIXME
+}
+
+// AutoHeightChar creats a character as close to the given height and depth
+// as possible.
+func AutoHeightChar(c string, height, depth float64, state State, factor float64) *HList {
+	// FIXME(sbinet): implement sized-alternatives-for-symbol
+	alts := []struct {
+		font string
+		sym  string
+	}{
+		{state.Font.Name, c},
+	}
+
+	const math = true
+	var (
+		xheight = state.Backend().XHeight(state.Font, state.DPI)
+		target  = height + depth
+
+		ch    *Char
+		shift float64
+	)
+
+	for _, v := range alts {
+		state.Font.Name = v.font
+		ch = NewChar(c, state, math)
+		// ensure that size 0 is chosen when the text is regular sized
+		// but with descender glyphs by subtracting 0.2*xheight
+		if ch.Height()+ch.Depth() >= target-0.2*xheight {
+			break
+		}
+	}
+
+	if state.Font.Name != "" {
+		if factor == 0 {
+			factor = target / (ch.Height() + ch.Depth())
+		}
+		state.Font.Size *= factor
+
+		ch = NewChar(c, state, math)
+		shift = depth - ch.Depth()
+	}
+
+	hlist := HListOf([]Node{ch}, true)
+	hlist.lst.shift = shift
+
+	return hlist
 }
 
 // Ship boxes to output once boxes have been set up.

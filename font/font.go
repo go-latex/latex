@@ -26,6 +26,9 @@ type Backend interface {
 	// Metrics returns the metrics.
 	Metrics(symbol string, font Font, dpi float64, math bool) Metrics
 
+	// XHeight returns the xheight for the given font and dpi.
+	XHeight(font Font, dpi float64) float64
+
 	// UnderlineThickness returns the line thickness that matches the given font.
 	// It is used as a base unit for drawing lines such as in a fraction or radical.
 	UnderlineThickness(font Font, dpi float64) float64

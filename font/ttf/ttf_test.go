@@ -6,14 +6,13 @@ package ttf
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"testing"
 
 	"github.com/go-latex/latex/font"
 	"github.com/go-latex/latex/internal/fakebackend"
 	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font/gofont/goitalic"
-	"golang.org/x/image/font/gofont/goregular"
 )
 
 func TestDejaVuBackend(t *testing.T) {
@@ -24,7 +23,7 @@ func TestDejaVuBackend(t *testing.T) {
 	f.Close()
 
 	var (
-		be  = NewBackend()
+		be  = newBackend()
 		ref = fakebackend.New()
 	)
 	for _, sym := range []string{
@@ -68,24 +67,30 @@ func newBackend() *Backend {
 		fonts:  make(map[string]*truetype.Font),
 	}
 
-	for name, raw := range map[string][]byte{
-		"default": goregular.TTF,
-		"regular": goregular.TTF,
-		"rm":      goregular.TTF,
-		"it":      goitalic.TTF,
-	} {
+	ftmap := map[string]string{
+		"default": "/usr/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf",
+		"regular": "/usr/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf",
+		"rm":      "/usr/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf",
+		"it":      "/usr/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf",
+	}
+
+	for k, fname := range ftmap {
+		raw, err := ioutil.ReadFile(fname)
+		if err != nil {
+			panic(err)
+		}
 		ft, err := truetype.Parse(raw)
 		if err != nil {
 			panic(err)
 		}
-		ttf.fonts[name] = ft
+		ttf.fonts[k] = ft
 	}
 
 	return ttf
 }
 
 func TestGofontBackend(t *testing.T) {
-	be := newBackend()
+	be := New(nil)
 	{
 		fnt := font.Font{Name: "default", Size: 12, Type: "regular"}
 		got := be.Metrics("A", fnt, 72, true)

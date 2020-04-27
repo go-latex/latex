@@ -387,6 +387,12 @@ func TestBox(t *testing.T) {
 			h: math.Inf(+1),
 			d: 0,
 		},
+		{
+			node: AutoHeightChar(`(`, 8.865625, 2.5703124999999996, state, 0),
+			w:    5.0047149658203125,
+			h:    9.734375,
+			d:    1.6875,
+		},
 	} {
 		t.Run("", func(t *testing.T) {
 			var (

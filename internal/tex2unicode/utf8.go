@@ -44,6 +44,19 @@ func Index(v string, math bool) rune {
 	panic(fmt.Errorf("%q is not a valid unicode character nor a known TeX symbol", v))
 }
 
+func HasSymbol(v string) bool {
+	_, ok := tex2uni[v]
+	return ok
+}
+
+func Symbols() []string {
+	names := make([]string, 0, len(tex2uni))
+	for k := range tex2uni {
+		names = append(names, k)
+	}
+	return names
+}
+
 var (
 	tex2uni = map[string]rune{
 		`widehat`:                  0x0302,

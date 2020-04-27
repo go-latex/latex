@@ -36,4 +36,13 @@ func TestBackend(t *testing.T) {
 			t.Fatalf("got=%#v\nwant=%#v", got, want)
 		}
 	}
+
+	{
+		fnt := font.Font{Name: "default", Size: 12, Type: "regular"}
+		got := be.XHeight(fnt, 72)
+		want := 6.5625
+		if got != want {
+			t.Fatalf("got=%#v\nwant=%#v", got, want)
+		}
+	}
 }

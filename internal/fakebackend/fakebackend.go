@@ -13,22 +13,26 @@ import (
 	"github.com/go-latex/latex/font"
 )
 
+type dbXHs map[xhKey]float64
 type dbFonts map[fontKey]font.Metrics
 type dbKerns map[kernKey]float64
 
 var (
 	fontsDb dbFonts
+	xhsDb   dbXHs
 	kernsDb dbKerns
 )
 
 type Backend struct {
 	fonts dbFonts
+	xhs   dbXHs
 	kerns dbKerns
 }
 
 func New() *Backend {
 	return &Backend{
 		fonts: fontsDb,
+		xhs:   xhsDb,
 		kerns: kernsDb,
 	}
 }
@@ -58,6 +62,17 @@ func (be *Backend) Metrics(symbol string, font font.Font, dpi float64, math bool
 	return metrics
 }
 
+// XHeight returns the xheight for the given font and dpi.
+func (be *Backend) XHeight(font font.Font, dpi float64) float64 {
+	key := xhKey{font.Name, font.Size, dpi}
+	xh, ok := be.xhs[key]
+	if !ok {
+		panic(fmt.Errorf("no pre-generated xheight for %#v", key))
+	}
+
+	return xh
+}
+
 // UnderlineThickness returns the line thickness that matches the given font.
 // It is used as a base unit for drawing lines such as in a fraction or radical.
 func (be *Backend) UnderlineThickness(font font.Font, dpi float64) float64 {
@@ -70,12 +85,13 @@ func (be *Backend) UnderlineThickness(font font.Font, dpi float64) float64 {
 
 // Kern returns the kerning distance between two symbols.
 func (be *Backend) Kern(ft1 font.Font, sym1 string, ft2 font.Font, sym2 string, dpi float64) float64 {
-	if ft1 != ft2 {
-		panic(fmt.Errorf("kern w/ different fonts not supported (ft1=%#v, ft2=%#v, sym1=%q, sym2=%q)", ft1, ft2, sym1, sym2))
+	if ft1 == ft2 {
+		return 0
 	}
 
 	kern, ok := be.kerns[kernKey{ft1, sym1, sym2}]
 	if !ok {
+		return 0
 		panic(fmt.Errorf(
 			"no pre-generated kerning for ft1=%v, sym1=%q, ft2=%v, sym2=%q",
 			ft1, sym1, ft2, sym2,
@@ -88,6 +104,12 @@ type fontKey struct {
 	symbol string
 	font   font.Font
 	math   bool
+}
+
+type xhKey struct {
+	font string
+	size float64
+	dpi  float64
 }
 
 type kernKey struct {

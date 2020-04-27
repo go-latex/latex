@@ -2,21 +2,27 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package latex
+package mtex
 
 import (
 	"strings"
 
 	"github.com/go-latex/latex/ast"
-	"github.com/go-latex/latex/internal/tex2unicode"
+	"github.com/go-latex/latex/tex"
 )
 
-type macroParser interface {
-	parseMacro(p *parser) ast.Node
+type handlerFunc func(p *parser, node ast.Node, state tex.State, math bool) tex.Node
+
+func (h handlerFunc) Handle(p *parser, node ast.Node, state tex.State, math bool) tex.Node {
+	return h(p, node, state, math)
 }
 
-func (p *parser) addBuiltinMacros() {
-	p.macros = map[string]macroParser{
+type handler interface {
+	Handle(p *parser, node ast.Node, state tex.State, math bool) tex.Node
+}
+
+var (
+	builtinMacros = map[string]handler{
 		// binary operators
 		`\amalg`:           builtinMacro(""),
 		`\ast`:             builtinMacro(""),
@@ -325,37 +331,26 @@ func (p *parser) addBuiltinMacros() {
 		`\overline`:     builtinMacro("A"),
 		`\operatorname`: builtinMacro("A"),
 	}
-
-	// add all known UTF-8 symbols
-	for _, k := range tex2unicode.Symbols() {
-		_, ok := p.macros[`\`+k]
-		if ok {
-			continue
-		}
-		p.macros[`\`+k] = builtinMacro("")
-	}
-}
+)
 
 type builtinMacro string
 
-func (m builtinMacro) parseMacro(p *parser) ast.Node {
-	node := &ast.Macro{
-		Name: &ast.Ident{
-			NamePos: p.s.tok.Pos,
-			Name:    p.s.tok.Text,
-		},
+func (m builtinMacro) Handle(p *parser, n ast.Node, state tex.State, math bool) tex.Node {
+	node := n.(*ast.Macro)
+	if m == "" {
+		return tex.NewChar(node.Name.Name, state, math)
 	}
 
 	for _, typ := range strings.ToLower(string(m)) {
 		switch typ {
 		case 'a':
-			p.parseMacroArg(node)
+			panic("not implemented")
 		case 'o':
-			p.parseOptMacroArg(node)
+			panic("not implemented")
 		case 'v':
-			p.parseVerbatimMacroArg(node)
+			panic("not implemented")
 		}
 	}
 
-	return node
+	return nil
 }

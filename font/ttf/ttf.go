@@ -7,69 +7,81 @@ package ttf // import "github.com/go-latex/latex/font/ttf"
 
 import (
 	"fmt"
-	"io/ioutil"
 	"unicode"
 
+	"github.com/go-latex/latex/drawtex"
 	"github.com/go-latex/latex/font"
 	"github.com/go-latex/latex/internal/tex2unicode"
 	"github.com/golang/freetype/truetype"
 	stdfont "golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/goitalic"
+	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/math/fixed"
 )
 
 type Backend struct {
+	canvas *drawtex.Canvas
 	glyphs map[ttfKey]ttfVal
 	fonts  map[string]*truetype.Font
 }
 
-func NewBackend() *Backend {
-	ttf := &Backend{
+func New(cnv *drawtex.Canvas) *Backend {
+	be := &Backend{
+		canvas: cnv,
 		glyphs: make(map[ttfKey]ttfVal),
 		fonts:  make(map[string]*truetype.Font),
 	}
 
-	ftmap := map[string]string{
-		"default": "/usr/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf",
-		"regular": "/usr/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf",
-		"rm":      "/usr/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf",
-		"it":      "/usr/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf",
+	ftmap := map[string][]byte{
+		"default": goregular.TTF,
+		"regular": goregular.TTF,
+		"rm":      goregular.TTF,
+		"it":      goitalic.TTF,
 	}
-
-	for k, fname := range ftmap {
-		raw, err := ioutil.ReadFile(fname)
-		if err != nil {
-			panic(err)
-		}
+	for k, raw := range ftmap {
 		ft, err := truetype.Parse(raw)
 		if err != nil {
 			panic(err)
 		}
-		ttf.fonts[k] = ft
+		be.fonts[k] = ft
 	}
 
-	return ttf
+	return be
 }
 
 // RenderGlyphs renders the glyph g at the reference point (x,y).
-func (ttf *Backend) RenderGlyph(x, y float64, font font.Font, symbol string, dpi float64) {
-	panic("not implemented")
+func (be *Backend) RenderGlyph(x, y float64, font font.Font, symbol string, dpi float64) {
+	glyph := be.getInfo(symbol, font, dpi, true)
+	be.canvas.RenderGlyph(x, y, drawtex.Glyph{
+		Font:       glyph.font,
+		Size:       glyph.size,
+		Postscript: glyph.postscript,
+		Metrics:    glyph.metrics,
+		Symbol:     string(glyph.rune),
+		Num:        glyph.glyph,
+		Offset:     glyph.offset,
+	})
 }
 
 // RenderRectFilled draws a filled black rectangle from (x1,y1) to (x2,y2).
-func (ttf *Backend) RenderRectFilled(x1, y1, x2, y2 float64) {
-	panic("not implemented")
+func (be *Backend) RenderRectFilled(x1, y1, x2, y2 float64) {
+	be.canvas.RenderRectFilled(x1, y1, x2, y2)
 }
 
 // Metrics returns the metrics.
 func (ttf *Backend) Metrics(symbol string, fnt font.Font, dpi float64, math bool) font.Metrics {
+	return ttf.getInfo(symbol, fnt, dpi, math).metrics
+}
+
+func (be *Backend) getInfo(symbol string, fnt font.Font, dpi float64, math bool) ttfVal {
 	key := ttfKey{symbol, fnt, dpi}
-	val, ok := ttf.glyphs[key]
+	val, ok := be.glyphs[key]
 	if ok {
-		return val.metrics
+		return val
 	}
 
 	hinting := hintingNone
-	ft, rn, symbol, fontSize, slanted := ttf.getGlyph(symbol, fnt, math)
+	ft, rn, symbol, fontSize, slanted := be.getGlyph(symbol, fnt, math)
 
 	var (
 		postscript = ft.Name(truetype.NameIDPostscriptName)
@@ -122,7 +134,7 @@ func (ttf *Backend) Metrics(symbol string, fnt font.Font, dpi float64, math bool
 		Slanted: slanted,
 	}
 
-	ttf.glyphs[key] = ttfVal{
+	be.glyphs[key] = ttfVal{
 		font:       ft,
 		size:       fnt.Size,
 		postscript: postscript,
@@ -132,7 +144,22 @@ func (ttf *Backend) Metrics(symbol string, fnt font.Font, dpi float64, math bool
 		glyph:      idx,
 		offset:     offset,
 	}
-	return me
+	return be.glyphs[key]
+}
+
+// XHeight returns the xheight for the given font and dpi.
+func (be *Backend) XHeight(fnt font.Font, dpi float64) float64 {
+	// FIXME(sbinet): use image/font/{sfnt,openfont} that provide a
+	// font.Metrics value with XHeight correctly filled
+	ft := be.getFont(fnt.Type)
+	face := truetype.NewFace(ft, &truetype.Options{
+		DPI:     dpi,
+		Size:    fnt.Size,
+		Hinting: stdfont.HintingNone,
+	})
+	defer face.Close()
+
+	return float64(face.Metrics().XHeight) / 64
 }
 
 const (
@@ -140,7 +167,7 @@ const (
 	hintingFull = stdfont.HintingFull
 )
 
-func (ttf *Backend) getGlyph(symbol string, font font.Font, math bool) (*truetype.Font, rune, string, float64, bool) {
+func (be *Backend) getGlyph(symbol string, font font.Font, math bool) (*truetype.Font, rune, string, float64, bool) {
 	var (
 		fontType = font.Type
 		idx      = tex2unicode.Index(symbol, math)
@@ -153,8 +180,8 @@ func (ttf *Backend) getGlyph(symbol string, font font.Font, math bool) (*truetyp
 			fontType = "rm"
 		}
 	}
-	slanted := (fontType == "it") || ttf.isSlanted(symbol)
-	ft := ttf.getFont(fontType)
+	slanted := (fontType == "it") || be.isSlanted(symbol)
+	ft := be.getFont(fontType)
 	if ft == nil {
 		panic("could not find TTF font for [" + fontType + "]")
 	}
@@ -166,7 +193,7 @@ func (ttf *Backend) getGlyph(symbol string, font font.Font, math bool) (*truetyp
 	return ft, idx, symbolName, font.Size, slanted
 }
 
-func (ttf *Backend) isSlanted(symbol string) bool {
+func (*Backend) isSlanted(symbol string) bool {
 	switch symbol {
 	case `\int`, `\oint`:
 		return true
@@ -175,13 +202,13 @@ func (ttf *Backend) isSlanted(symbol string) bool {
 	}
 }
 
-func (ttf *Backend) getFont(fontType string) *truetype.Font {
-	return ttf.fonts[fontType]
+func (be *Backend) getFont(fontType string) *truetype.Font {
+	return be.fonts[fontType]
 }
 
 // UnderlineThickness returns the line thickness that matches the given font.
 // It is used as a base unit for drawing lines such as in a fraction or radical.
-func (ttf *Backend) UnderlineThickness(font font.Font, dpi float64) float64 {
+func (*Backend) UnderlineThickness(font font.Font, dpi float64) float64 {
 	// theoretically, we could grab the underline thickness from the font
 	// metrics.
 	// but that information is just too un-reliable.
@@ -190,8 +217,16 @@ func (ttf *Backend) UnderlineThickness(font font.Font, dpi float64) float64 {
 }
 
 // Kern returns the kerning distance between two symbols.
-func (ttf *Backend) Kern(ft1 font.Font, sym1 string, ft2 font.Font, sym2 string, dpi float64) float64 {
-	panic("not implemented")
+func (be *Backend) Kern(ft1 font.Font, sym1 string, ft2 font.Font, sym2 string, dpi float64) float64 {
+	if ft1.Name == ft2.Name && ft1.Size == ft2.Size {
+		const math = true
+		info1 := be.getInfo(sym1, ft1, dpi, math)
+		info2 := be.getInfo(sym1, ft2, dpi, math)
+		scale := fixed.Int26_6(info1.font.FUnitsPerEm())
+		k := info1.font.Kern(scale, info1.glyph, info2.glyph)
+		return float64(k) / 64
+	}
+	return 0
 }
 
 type ttfKey struct {
