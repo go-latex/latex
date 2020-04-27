@@ -23,7 +23,7 @@ func TestPrint(t *testing.T) {
 		},
 		{
 			node: &Macro{
-				Name: Ident{
+				Name: &Ident{
 					NamePos: 42,
 					Name:    `\cos`,
 				},
@@ -34,7 +34,7 @@ func TestPrint(t *testing.T) {
 		},
 		{
 			node: &Macro{
-				Name: Ident{
+				Name: &Ident{
 					NamePos: 42,
 					Name:    `\sqrt`,
 				},
@@ -47,7 +47,7 @@ func TestPrint(t *testing.T) {
 		},
 		{
 			node: &Macro{
-				Name: Ident{
+				Name: &Ident{
 					NamePos: 42,
 					Name:    `\sqrt`,
 				},

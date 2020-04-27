@@ -328,7 +328,7 @@ type builtinMacro string
 
 func (m builtinMacro) parseMacro(p *parser) ast.Node {
 	node := &ast.Macro{
-		Name: ast.Ident{
+		Name: &ast.Ident{
 			NamePos: p.s.tok.Pos,
 			Name:    p.s.tok.Text,
 		},

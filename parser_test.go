@@ -72,7 +72,7 @@ func TestParser(t *testing.T) {
 					Delim: "$",
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\cos`},
+							Name: &ast.Ident{Name: `\cos`},
 						},
 					},
 				},
@@ -85,7 +85,7 @@ func TestParser(t *testing.T) {
 					Delim: "$",
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\sqrt`},
+							Name: &ast.Ident{Name: `\sqrt`},
 							Args: []ast.Node{
 								&ast.Arg{
 									List: []ast.Node{
@@ -95,7 +95,7 @@ func TestParser(t *testing.T) {
 										&ast.Word{
 											Text: "x",
 										},
-										&ast.Macro{Name: ast.Ident{Name: `\pi`}},
+										&ast.Macro{Name: &ast.Ident{Name: `\pi`}},
 									},
 								},
 							},
@@ -111,7 +111,7 @@ func TestParser(t *testing.T) {
 					Delim: "$",
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\sqrt`},
+							Name: &ast.Ident{Name: `\sqrt`},
 							Args: []ast.Node{
 								&ast.OptArg{
 									List: []ast.Node{
@@ -128,7 +128,7 @@ func TestParser(t *testing.T) {
 										&ast.Word{
 											Text: "x",
 										},
-										&ast.Macro{Name: ast.Ident{Name: `\pi`}},
+										&ast.Macro{Name: &ast.Ident{Name: `\pi`}},
 									},
 								},
 							},
@@ -144,7 +144,7 @@ func TestParser(t *testing.T) {
 					Delim: "$",
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\sqrt`},
+							Name: &ast.Ident{Name: `\sqrt`},
 							Args: []ast.Node{
 								&ast.OptArg{
 									List: []ast.Node{
@@ -161,7 +161,7 @@ func TestParser(t *testing.T) {
 										&ast.Word{
 											Text: "x",
 										},
-										&ast.Macro{Name: ast.Ident{Name: `\pi`}},
+										&ast.Macro{Name: &ast.Ident{Name: `\pi`}},
 									},
 								},
 							},
@@ -177,7 +177,7 @@ func TestParser(t *testing.T) {
 					Delim: "$",
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\exp`},
+							Name: &ast.Ident{Name: `\exp`},
 							Args: []ast.Node{
 								&ast.Arg{
 									List: []ast.Node{
@@ -187,7 +187,7 @@ func TestParser(t *testing.T) {
 										&ast.Word{
 											Text: "x",
 										},
-										&ast.Macro{Name: ast.Ident{Name: `\pi`}},
+										&ast.Macro{Name: &ast.Ident{Name: `\pi`}},
 									},
 								},
 							},
@@ -204,7 +204,7 @@ func TestParser(t *testing.T) {
 					List: []ast.Node{
 						&ast.Word{Text: "e"},
 						&ast.Sup{Node: &ast.Macro{
-							Name: ast.Ident{Name: `\pi`},
+							Name: &ast.Ident{Name: `\pi`},
 						}},
 					},
 				},
@@ -217,7 +217,7 @@ func TestParser(t *testing.T) {
 					Delim: "$",
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\mathcal`},
+							Name: &ast.Ident{Name: `\mathcal`},
 							Args: []ast.Node{
 								&ast.Arg{
 									List: []ast.Node{
@@ -237,7 +237,7 @@ func TestParser(t *testing.T) {
 					Delim: "$",
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\frac`},
+							Name: &ast.Ident{Name: `\frac`},
 							Args: []ast.Node{
 								&ast.Arg{
 									List: []ast.Node{
@@ -261,12 +261,12 @@ func TestParser(t *testing.T) {
 				&ast.MathExpr{
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\sqrt`},
+							Name: &ast.Ident{Name: `\sqrt`},
 							Args: []ast.Node{
 								&ast.Arg{
 									List: []ast.Node{
 										&ast.Macro{
-											Name: ast.Ident{Name: `\frac`},
+											Name: &ast.Ident{Name: `\frac`},
 											Args: []ast.Node{
 												&ast.Arg{
 													List: []ast.Node{
@@ -274,16 +274,16 @@ func TestParser(t *testing.T) {
 														&ast.Sup{Node: ast.List{
 															&ast.Literal{Text: "3"},
 															&ast.Word{Text: "i"},
-															&ast.Macro{Name: ast.Ident{Name: "\\pi"}},
+															&ast.Macro{Name: &ast.Ident{Name: "\\pi"}},
 														}},
 													},
 												},
 												&ast.Arg{
 													List: []ast.Node{
 														&ast.Literal{Text: "2"},
-														&ast.Macro{Name: ast.Ident{Name: `\cos`}},
+														&ast.Macro{Name: &ast.Ident{Name: `\cos`}},
 														&ast.Literal{Text: "3"},
-														&ast.Macro{Name: ast.Ident{Name: `\pi`}},
+														&ast.Macro{Name: &ast.Ident{Name: `\pi`}},
 													},
 												},
 											},
@@ -302,12 +302,12 @@ func TestParser(t *testing.T) {
 				&ast.MathExpr{
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\sqrt`},
+							Name: &ast.Ident{Name: `\sqrt`},
 							Args: []ast.Node{
 								&ast.Arg{
 									List: []ast.Node{
 										&ast.Macro{
-											Name: ast.Ident{Name: `\frac`},
+											Name: &ast.Ident{Name: `\frac`},
 											Args: []ast.Node{
 												&ast.Arg{
 													List: []ast.Node{
@@ -315,16 +315,16 @@ func TestParser(t *testing.T) {
 														&ast.Sup{Node: ast.List{
 															&ast.Literal{Text: "3"},
 															&ast.Word{Text: "i"},
-															&ast.Macro{Name: ast.Ident{Name: "\\pi"}},
+															&ast.Macro{Name: &ast.Ident{Name: "\\pi"}},
 														}},
 													},
 												},
 												&ast.Arg{
 													List: []ast.Node{
 														&ast.Literal{Text: "2"},
-														&ast.Macro{Name: ast.Ident{Name: `\cos`}},
+														&ast.Macro{Name: &ast.Ident{Name: `\cos`}},
 														&ast.Literal{Text: "3"},
-														&ast.Macro{Name: ast.Ident{Name: `\pi`}},
+														&ast.Macro{Name: &ast.Ident{Name: `\pi`}},
 													},
 												},
 											},
@@ -336,7 +336,7 @@ func TestParser(t *testing.T) {
 					},
 				},
 				&ast.Macro{
-					Name: ast.Ident{Name: `\textbf`},
+					Name: &ast.Ident{Name: `\textbf`},
 					Args: []ast.Node{
 						&ast.Arg{
 							List: []ast.Node{
@@ -351,7 +351,7 @@ func TestParser(t *testing.T) {
 				&ast.MathExpr{
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: "\\sqrt"},
+							Name: &ast.Ident{Name: "\\sqrt"},
 							Args: []ast.Node{
 								&ast.Arg{
 									List: []ast.Node{
@@ -362,14 +362,14 @@ func TestParser(t *testing.T) {
 						},
 						&ast.Symbol{Text: "="},
 						&ast.Literal{Text: "13"},
-						&ast.Macro{Name: ast.Ident{Name: "\\,"}},
+						&ast.Macro{Name: &ast.Ident{Name: "\\,"}},
 					},
 				},
 				&ast.Word{Text: "TeV"},
 				&ast.MathExpr{
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: "\\mathcal"},
+							Name: &ast.Ident{Name: "\\mathcal"},
 							Args: []ast.Node{
 								&ast.Arg{
 									List: []ast.Node{
@@ -378,11 +378,11 @@ func TestParser(t *testing.T) {
 								},
 							},
 						},
-						&ast.Macro{Name: ast.Ident{Name: "\\,"}},
+						&ast.Macro{Name: &ast.Ident{Name: "\\,"}},
 						&ast.Symbol{Text: "="},
-						&ast.Macro{Name: ast.Ident{Name: "\\,"}},
+						&ast.Macro{Name: &ast.Ident{Name: "\\,"}},
 						&ast.Literal{Text: "3"},
-						&ast.Macro{Name: ast.Ident{Name: "\\,"}},
+						&ast.Macro{Name: &ast.Ident{Name: "\\,"}},
 						&ast.Word{Text: "ab"},
 						&ast.Sup{
 							Node: ast.List{
@@ -438,7 +438,7 @@ func TestParser(t *testing.T) {
 				&ast.MathExpr{
 					List: []ast.Node{
 						&ast.Macro{
-							Name: ast.Ident{Name: `\sum`},
+							Name: &ast.Ident{Name: `\sum`},
 						},
 						&ast.Sub{
 							Node: ast.List{

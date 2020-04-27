@@ -44,7 +44,7 @@ func (x List) End() token.Pos {
 //  \sqrt{a}
 //  \frac{num}{den}
 type Macro struct {
-	Name Ident
+	Name *Ident
 	Args []Node
 }
 
