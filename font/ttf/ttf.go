@@ -41,7 +41,7 @@ func New(cnv *drawtex.Canvas) *Backend {
 	for k, raw := range ftmap {
 		ft, err := truetype.Parse(raw)
 		if err != nil {
-			panic(err)
+			panic(fmt.Errorf("could not parse %q: %+v", k, err))
 		}
 		be.fonts[k] = ft
 	}
