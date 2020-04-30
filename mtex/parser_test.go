@@ -18,7 +18,6 @@ func TestParse(t *testing.T) {
 	)
 	var (
 		be = fakebackend.New()
-		r  Renderer
 	)
 	for _, tc := range []struct {
 		expr    string
@@ -142,8 +141,7 @@ func TestParse(t *testing.T) {
 		},
 	} {
 		t.Run("", func(t *testing.T) {
-			p := newParser(r, be)
-			got, err := p.parse(tc.expr, ftsize, dpi)
+			got, err := Parse(tc.expr, ftsize, dpi, be)
 			if err != nil {
 				t.Fatalf("could not parse %q: %+v", tc.expr, err)
 			}

@@ -18,17 +18,22 @@ import (
 	"github.com/go-latex/latex/tex"
 )
 
+// Parse parses a LaTeX math expression and returns the TeX-like box model
+// and an error if any.
+func Parse(expr string, fontSize, DPI float64, backend font.Backend) (tex.Node, error) {
+	p := newParser(backend)
+	return p.parse(expr, fontSize, DPI)
+}
+
 type parser struct {
-	r  Renderer
 	be font.Backend
 
 	expr   string
 	macros map[string]handler
 }
 
-func newParser(r Renderer, be font.Backend) *parser {
+func newParser(be font.Backend) *parser {
 	p := &parser{
-		r:      r,
 		be:     be,
 		macros: make(map[string]handler),
 	}

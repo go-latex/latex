@@ -19,8 +19,7 @@ type Renderer interface {
 
 func Render(dst Renderer, expr string, size, dpi float64) error {
 	cnv := drawtex.New()
-	p := newParser(dst, ttf.New(cnv))
-	box, err := p.parse(expr, size, 72)
+	box, err := Parse(expr, size, 72, ttf.New(cnv))
 	if err != nil {
 		return fmt.Errorf("could not parse math expression: %w", err)
 	}
