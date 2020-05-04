@@ -47,7 +47,7 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Symbol{Text: "+"},
 						&ast.Literal{Text: "10"},
 						&ast.Word{Text: "x"},
@@ -60,7 +60,7 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						ast.List{}, // FIXME(sbinet): shouldn't this be a "group"?
 						&ast.Symbol{Text: "+"},
 						&ast.Literal{Text: "10"},
@@ -74,7 +74,7 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\cos`},
 						},
@@ -87,12 +87,12 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\sqrt`},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Literal{
 											Text: "2",
 										},
@@ -113,19 +113,19 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\sqrt`},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.OptArg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Literal{
 											Text: "3",
 										},
 									},
 								},
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Literal{
 											Text: "2",
 										},
@@ -146,19 +146,19 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\sqrt`},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.OptArg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Word{
 											Text: "n",
 										},
 									},
 								},
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Literal{
 											Text: "2",
 										},
@@ -179,12 +179,12 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\exp`},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Literal{
 											Text: "2",
 										},
@@ -205,7 +205,7 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Word{Text: "e"},
 						&ast.Sup{Node: &ast.Macro{
 							Name: &ast.Ident{Name: `\pi`},
@@ -219,12 +219,12 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\mathcal`},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Word{Text: "L"}, // FIXME: or Ident?
 									},
 								},
@@ -239,17 +239,17 @@ func TestParser(t *testing.T) {
 			want: ast.List{
 				&ast.MathExpr{
 					Delim: "$",
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\frac`},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Word{Text: "num"},
 									},
 								},
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Word{Text: "den"},
 									},
 								},
@@ -263,17 +263,17 @@ func TestParser(t *testing.T) {
 			input: `$\sqrt{\frac{e^{3i\pi}}{2\cos 3\pi}}$`,
 			want: ast.List{
 				&ast.MathExpr{
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\sqrt`},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Macro{
 											Name: &ast.Ident{Name: `\frac`},
-											Args: []ast.Node{
+											Args: ast.List{
 												&ast.Arg{
-													List: []ast.Node{
+													List: ast.List{
 														&ast.Word{Text: "e"},
 														&ast.Sup{Node: ast.List{
 															&ast.Literal{Text: "3"},
@@ -283,7 +283,7 @@ func TestParser(t *testing.T) {
 													},
 												},
 												&ast.Arg{
-													List: []ast.Node{
+													List: ast.List{
 														&ast.Literal{Text: "2"},
 														&ast.Macro{Name: &ast.Ident{Name: `\cos`}},
 														&ast.Literal{Text: "3"},
@@ -304,17 +304,17 @@ func TestParser(t *testing.T) {
 			input: `$\sqrt{\frac{e^{3i\pi}}{2\cos 3\pi}}$ \textbf{APLAS} Dummy -- $\sqrt{s}=13\,$TeV $\mathcal{L}\,=\,3\,ab^{-1}$`,
 			want: ast.List{
 				&ast.MathExpr{
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\sqrt`},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Macro{
 											Name: &ast.Ident{Name: `\frac`},
-											Args: []ast.Node{
+											Args: ast.List{
 												&ast.Arg{
-													List: []ast.Node{
+													List: ast.List{
 														&ast.Word{Text: "e"},
 														&ast.Sup{Node: ast.List{
 															&ast.Literal{Text: "3"},
@@ -324,7 +324,7 @@ func TestParser(t *testing.T) {
 													},
 												},
 												&ast.Arg{
-													List: []ast.Node{
+													List: ast.List{
 														&ast.Literal{Text: "2"},
 														&ast.Macro{Name: &ast.Ident{Name: `\cos`}},
 														&ast.Literal{Text: "3"},
@@ -342,9 +342,9 @@ func TestParser(t *testing.T) {
 				&ast.Symbol{Text: " "},
 				&ast.Macro{
 					Name: &ast.Ident{Name: `\textbf`},
-					Args: []ast.Node{
+					Args: ast.List{
 						&ast.Arg{
-							List: []ast.Node{
+							List: ast.List{
 								&ast.Word{Text: "APLAS"},
 							},
 						},
@@ -357,12 +357,12 @@ func TestParser(t *testing.T) {
 				&ast.Symbol{Text: "-"},
 				&ast.Symbol{Text: " "},
 				&ast.MathExpr{
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: "\\sqrt"},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Word{Text: "s"},
 									},
 								},
@@ -376,12 +376,12 @@ func TestParser(t *testing.T) {
 				&ast.Word{Text: "TeV"},
 				&ast.Symbol{Text: " "},
 				&ast.MathExpr{
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: "\\mathcal"},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.Arg{
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Word{Text: "L"},
 									},
 								},
@@ -419,7 +419,7 @@ func TestParser(t *testing.T) {
 			input: `$x_i$`,
 			want: ast.List{
 				&ast.MathExpr{
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Word{Text: "x"},
 						&ast.Sub{
 							Node: &ast.Word{Text: "i"},
@@ -432,7 +432,7 @@ func TestParser(t *testing.T) {
 			input: `$x^n$`,
 			want: ast.List{
 				&ast.MathExpr{
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Word{Text: "x"},
 						&ast.Sup{
 							Node: &ast.Word{Text: "n"},
@@ -445,7 +445,7 @@ func TestParser(t *testing.T) {
 			input: `$\sum_{i=0}^{n}$`,
 			want: ast.List{
 				&ast.MathExpr{
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\sum`},
 						},
@@ -522,7 +522,7 @@ func TestTokenPos(t *testing.T) {
 				&ast.MathExpr{
 					Delim: "$",
 					Left:  0,
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Symbol{Text: "+", SymPos: 1},
 						&ast.Literal{Text: "10", LitPos: 2},
 						&ast.Word{Text: "x", WordPos: 4},
@@ -537,13 +537,13 @@ func TestTokenPos(t *testing.T) {
 				&ast.MathExpr{
 					Delim: "$",
 					Left:  0,
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Macro{
 							Name: &ast.Ident{Name: `\sqrt`, NamePos: 1},
-							Args: []ast.Node{
+							Args: ast.List{
 								&ast.Arg{
 									Lbrace: 6,
-									List: []ast.Node{
+									List: ast.List{
 										&ast.Literal{
 											Text:   "2",
 											LitPos: 7,
@@ -572,7 +572,7 @@ func TestTokenPos(t *testing.T) {
 				&ast.MathExpr{
 					Delim: "$",
 					Left:  0,
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Word{Text: "e", WordPos: 1},
 						&ast.Sup{
 							HatPos: 2,
@@ -603,7 +603,7 @@ func TestTokenPos(t *testing.T) {
 				&ast.MathExpr{
 					Delim: "$",
 					Left:  0,
-					List: []ast.Node{
+					List: ast.List{
 						&ast.Word{Text: "x", WordPos: 1},
 						&ast.Sub{
 							UnderPos: 2,

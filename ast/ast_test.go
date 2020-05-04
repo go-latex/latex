@@ -38,8 +38,8 @@ func TestPrint(t *testing.T) {
 					NamePos: 42,
 					Name:    `\sqrt`,
 				},
-				Args: []Node{
-					&Arg{List: []Node{&Word{Text: "x"}}},
+				Args: List{
+					&Arg{List: List{&Word{Text: "x"}}},
 				},
 			},
 			pos:  42,
@@ -51,9 +51,9 @@ func TestPrint(t *testing.T) {
 					NamePos: 42,
 					Name:    `\sqrt`,
 				},
-				Args: []Node{
-					&OptArg{List: []Node{&Word{Text: "n"}}},
-					&Arg{List: []Node{&Word{Text: "x"}}},
+				Args: List{
+					&OptArg{List: List{&Word{Text: "n"}}},
+					&Arg{List: List{&Word{Text: "x"}}},
 				},
 			},
 			pos:  42,
@@ -85,7 +85,7 @@ func TestPrint(t *testing.T) {
 		},
 		{
 			node: &MathExpr{
-				List: []Node{
+				List: List{
 					&Literal{Text: "1"},
 					&Word{Text: "x"},
 				},

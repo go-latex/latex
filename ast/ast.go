@@ -45,7 +45,7 @@ func (x List) End() token.Pos {
 //  \frac{num}{den}
 type Macro struct {
 	Name *Ident
-	Args []Node
+	Args List
 }
 
 func (x *Macro) isNode()        {}
@@ -62,7 +62,7 @@ func (x *Macro) End() token.Pos {
 //  {a} in \sqrt{a}
 type Arg struct {
 	Lbrace token.Pos // position of '{'
-	List   []Node    // or stmt?
+	List   List      // or stmt?
 	Rbrace token.Pos // position of '}'
 }
 
@@ -75,7 +75,7 @@ func (x *Arg) isNode()        {}
 //  [n] in \sqrt[n]{a}
 type OptArg struct {
 	Lbrack token.Pos // position of '['
-	List   []Node
+	List   List
 	Rbrack token.Pos // position of ']'
 }
 
@@ -99,7 +99,7 @@ func (x *Ident) isNode()        {}
 type MathExpr struct {
 	Delim string    // delimiter used for this math expression.
 	Left  token.Pos // position of opening '$', '\(', '\[' or '\begin{math}'
-	List  []Node
+	List  List
 	Right token.Pos // position of closing '$', '\)', '\]' or '\end{math}'
 }
 

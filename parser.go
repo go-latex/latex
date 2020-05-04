@@ -41,7 +41,7 @@ func newParser(x string) *parser {
 }
 
 func (p *parser) parse() (ast.Node, error) {
-	var nodes []ast.Node
+	var nodes ast.List
 	for p.s.Next() {
 		tok := p.s.Token()
 		node := p.parseNode(tok)
@@ -51,7 +51,7 @@ func (p *parser) parse() (ast.Node, error) {
 		nodes = append(nodes, node)
 	}
 
-	return ast.List(nodes), nil
+	return nodes, nil
 }
 
 func (p *parser) next() token.Token {
