@@ -14,10 +14,21 @@ import (
 	"github.com/go-latex/latex/internal/tex2unicode"
 	"github.com/golang/freetype/truetype"
 	stdfont "golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/gobold"
+	"golang.org/x/image/font/gofont/gobolditalic"
 	"golang.org/x/image/font/gofont/goitalic"
 	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/math/fixed"
 )
+
+type Fonts struct {
+	Default *truetype.Font
+
+	Rm   *truetype.Font
+	It   *truetype.Font
+	Bf   *truetype.Font
+	BfIt *truetype.Font
+}
 
 type Backend struct {
 	canvas *drawtex.Canvas
@@ -26,25 +37,21 @@ type Backend struct {
 }
 
 func New(cnv *drawtex.Canvas) *Backend {
+	return NewFrom(cnv, &defaultFonts)
+}
+
+func NewFrom(cnv *drawtex.Canvas, fnts *Fonts) *Backend {
 	be := &Backend{
 		canvas: cnv,
 		glyphs: make(map[ttfKey]ttfVal),
 		fonts:  make(map[string]*truetype.Font),
 	}
 
-	ftmap := map[string][]byte{
-		"default": goregular.TTF,
-		"regular": goregular.TTF,
-		"rm":      goregular.TTF,
-		"it":      goitalic.TTF,
-	}
-	for k, raw := range ftmap {
-		ft, err := truetype.Parse(raw)
-		if err != nil {
-			panic(fmt.Errorf("could not parse %q: %+v", k, err))
-		}
-		be.fonts[k] = ft
-	}
+	be.fonts["default"] = fnts.Default
+	be.fonts["regular"] = fnts.Rm
+	be.fonts["rm"] = fnts.Rm
+	be.fonts["it"] = fnts.It
+	be.fonts["bf"] = fnts.Bf
 
 	return be
 }
@@ -244,6 +251,25 @@ type ttfVal struct {
 	rune       rune
 	glyph      truetype.Index
 	offset     float64
+}
+
+var defaultFonts = Fonts{
+	Rm:   mustParseTTF(goregular.TTF),
+	It:   mustParseTTF(goitalic.TTF),
+	Bf:   mustParseTTF(gobold.TTF),
+	BfIt: mustParseTTF(gobolditalic.TTF),
+}
+
+func mustParseTTF(raw []byte) *truetype.Font {
+	ft, err := truetype.Parse(raw)
+	if err != nil {
+		panic(fmt.Errorf("could not parse raw TTF data: %+v", err))
+	}
+	return ft
+}
+
+func init() {
+	defaultFonts.Default = defaultFonts.Rm
 }
 
 var (
