@@ -17,8 +17,8 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/go-latex/latex/drawtex"
 	"github.com/go-latex/latex/mtex"
-	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 )
 
 type Renderer struct {
@@ -58,11 +58,16 @@ func (r *Renderer) Render(width, height, dpi float64, c *drawtex.Canvas) error {
 }
 
 func drawGlyph(ctx *gg.Context, dpi float64, op drawtex.GlyphOp) {
-	face := truetype.NewFace(op.Glyph.Font, &truetype.Options{
+	face, err := opentype.NewFace(op.Glyph.Font, &opentype.FaceOptions{
 		DPI:     dpi,
 		Size:    op.Glyph.Size,
 		Hinting: font.HintingNone,
 	})
+	if err != nil {
+		panic(fmt.Errorf("could not open font face for glyph %q: %+v",
+			op.Glyph.Symbol, err,
+		))
+	}
 	defer face.Close()
 	ctx.SetFontFace(face)
 

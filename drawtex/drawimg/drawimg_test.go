@@ -54,6 +54,10 @@ func TestRenderer(t *testing.T) {
 			}
 
 			if got, want := out.Bytes(), load(tc.name); !bytes.Equal(got, want) {
+				err := ioutil.WriteFile("testdata/"+tc.name+".png", got, 0644)
+				if err != nil {
+					t.Fatalf("could not create output file: %+v", err)
+				}
 				t.Fatal("files differ")
 			}
 		})

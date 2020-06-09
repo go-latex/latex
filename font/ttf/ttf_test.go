@@ -12,7 +12,7 @@ import (
 	"github.com/go-fonts/dejavu/dejavusansoblique"
 	"github.com/go-latex/latex/font"
 	"github.com/go-latex/latex/internal/fakebackend"
-	"github.com/golang/freetype/truetype"
+	"golang.org/x/image/font/sfnt"
 )
 
 func TestDejaVuBackend(t *testing.T) {
@@ -44,10 +44,16 @@ func TestDejaVuBackend(t *testing.T) {
 				//{Name: "it", Size: 12, Type: "it"},
 				//{Name: "it", Size: 10, Type: "it"},
 			} {
-				t.Run(fmt.Sprintf("%s-math=%v-%s-%g-%s", sym, math, descr.Name, descr.Size, descr.Type), func(t *testing.T) {
+				t.Run(fmt.Sprintf("Metrics/%s-math=%v-%s-%g-%s", sym, math, descr.Name, descr.Size, descr.Type), func(t *testing.T) {
 					got := be.Metrics(sym, descr, 72, math)
 					if got, want := got, ref.Metrics(sym, descr, 72, math); got != want {
 						t.Fatalf("invalid metrics.\ngot= %#v\nwant=%#v\n", got, want)
+					}
+				})
+				t.Run(fmt.Sprintf("XHeight/%s-math=%v-%s-%g-%s", sym, math, descr.Name, descr.Size, descr.Type), func(t *testing.T) {
+					got := be.XHeight(descr, 72)
+					if got, want := got, ref.XHeight(descr, 72); got != want {
+						t.Fatalf("invalid xheight.\ngot= %#v\nwant=%#v\n", got, want)
 					}
 				})
 			}
@@ -58,7 +64,7 @@ func TestDejaVuBackend(t *testing.T) {
 func newBackend() *Backend {
 	be := &Backend{
 		glyphs: make(map[ttfKey]ttfVal),
-		fonts:  make(map[string]*truetype.Font),
+		fonts:  make(map[string]*sfnt.Font),
 	}
 
 	ftmap := map[string][]byte{
@@ -68,7 +74,7 @@ func newBackend() *Backend {
 		"it":      dejavusansoblique.TTF,
 	}
 	for k, raw := range ftmap {
-		ft, err := truetype.Parse(raw)
+		ft, err := sfnt.Parse(raw)
 		if err != nil {
 			panic(fmt.Errorf("could not parse %q: %+v", k, err))
 		}
