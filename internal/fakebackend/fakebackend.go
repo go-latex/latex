@@ -92,10 +92,10 @@ func (be *Backend) Kern(ft1 font.Font, sym1 string, ft2 font.Font, sym2 string, 
 	kern, ok := be.kerns[kernKey{ft1, sym1, sym2}]
 	if !ok {
 		return 0
-		panic(fmt.Errorf(
-			"no pre-generated kerning for ft1=%v, sym1=%q, ft2=%v, sym2=%q",
-			ft1, sym1, ft2, sym2,
-		))
+		//	panic(fmt.Errorf(
+		//		"no pre-generated kerning for ft1=%v, sym1=%q, ft2=%v, sym2=%q",
+		//		ft1, sym1, ft2, sym2,
+		//	))
 	}
 	return kern
 }

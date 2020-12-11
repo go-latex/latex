@@ -171,7 +171,7 @@ func (be *Backend) XHeight(fnt font.Font, dpi float64) float64 {
 
 const (
 	hintingNone = stdfont.HintingNone
-	hintingFull = stdfont.HintingFull
+	//hintingFull = stdfont.HintingFull
 )
 
 func (be *Backend) getGlyph(symbol string, font font.Font, math bool) (*truetype.Font, rune, string, float64, bool) {

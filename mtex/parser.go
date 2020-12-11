@@ -538,8 +538,8 @@ type mathStyleKind int
 const (
 	displayStyle mathStyleKind = iota
 	textStyle
-	scriptStyle
-	scriptScriptStyle
+	//scriptStyle       // FIXME
+	//scriptScriptStyle // FIXME
 )
 
 func rcparams(k string) interface{} {

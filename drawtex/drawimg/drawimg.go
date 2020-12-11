@@ -36,7 +36,7 @@ func (r *Renderer) Render(width, height, dpi float64, c *drawtex.Canvas) error {
 	// log.Printf("write: w=%g, h=%g", w, h)
 
 	if false {
-		draw.Draw(ctx.Image().(draw.Image), ctx.Image().Bounds(), &image.Uniform{color.White}, image.ZP, draw.Src)
+		draw.Draw(ctx.Image().(draw.Image), ctx.Image().Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
 	}
 
 	ctx.SetColor(color.Black)
