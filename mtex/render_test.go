@@ -48,7 +48,7 @@ func TestRender(t *testing.T) {
 		},
 	} {
 		t.Run(tc.expr, func(t *testing.T) {
-			err := Render(dummyRenderer{}, tc.expr, ftsize, dpi)
+			err := Render(dummyRenderer{}, tc.expr, ftsize, dpi, nil)
 
 			switch {
 			case err != nil && tc.want != nil:

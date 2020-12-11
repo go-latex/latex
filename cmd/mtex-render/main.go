@@ -47,7 +47,7 @@ func main() {
 	defer f.Close()
 
 	dst := drawimg.NewRenderer(f)
-	err = mtex.Render(dst, expr, *size, *dpi)
+	err = mtex.Render(dst, expr, *size, *dpi, nil)
 	if err != nil {
 		log.Fatalf("could not render math expression %q: %+v", expr, err)
 	}
