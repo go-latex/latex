@@ -6,6 +6,7 @@
 package ttf // import "github.com/go-latex/latex/font/ttf"
 
 import (
+	"errors"
 	"fmt"
 	"unicode"
 
@@ -249,11 +250,14 @@ func (be *Backend) Kern(ft1 font.Font, sym1 string, ft2 font.Font, sym2 string, 
 	if ft1.Name == ft2.Name && ft1.Size == ft2.Size {
 		const math = true
 		info1 := be.getInfo(sym1, ft1, dpi, math)
-		info2 := be.getInfo(sym1, ft2, dpi, math)
+		info2 := be.getInfo(sym2, ft2, dpi, math)
 		scale := fixed.Int26_6(info1.font.UnitsPerEm())
 		var buf sfnt.Buffer
 		k, err := info1.font.Kern(&buf, info1.glyph, info2.glyph, scale, hintingNone)
 		if err != nil {
+			if errors.Is(err, sfnt.ErrNotFound) {
+				return 0
+			}
 			panic(fmt.Errorf("could not compute kerning for %q/%q: %+v",
 				sym1, sym2, err,
 			))
