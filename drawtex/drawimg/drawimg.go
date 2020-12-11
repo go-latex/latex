@@ -10,6 +10,8 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"image/png"
+	"io"
 	"math"
 
 	"github.com/fogleman/gg"
@@ -20,11 +22,11 @@ import (
 )
 
 type Renderer struct {
-	fname string
+	w io.Writer
 }
 
-func NewRenderer(fname string) *Renderer {
-	return &Renderer{fname}
+func NewRenderer(w io.Writer) *Renderer {
+	return &Renderer{w: w}
 }
 
 func (r *Renderer) Render(width, height, dpi float64, c *drawtex.Canvas) error {
@@ -52,7 +54,7 @@ func (r *Renderer) Render(width, height, dpi float64, c *drawtex.Canvas) error {
 		}
 	}
 
-	return ctx.SavePNG(r.fname)
+	return png.Encode(r.w, ctx.Image())
 }
 
 func drawGlyph(ctx *gg.Context, dpi float64, op drawtex.GlyphOp) {

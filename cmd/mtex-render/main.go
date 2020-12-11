@@ -12,6 +12,7 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 
 	"github.com/go-latex/latex/drawtex/drawimg"
 	"github.com/go-latex/latex/mtex"
@@ -39,9 +40,20 @@ func main() {
 
 	log.Printf("rendering math expression: %q", expr)
 
-	dst := drawimg.NewRenderer(*out)
-	err := mtex.Render(dst, expr, *size, *dpi)
+	f, err := os.Create(*out)
+	if err != nil {
+		log.Fatalf("could not create output file: %+v", err)
+	}
+	defer f.Close()
+
+	dst := drawimg.NewRenderer(f)
+	err = mtex.Render(dst, expr, *size, *dpi)
 	if err != nil {
 		log.Fatalf("could not render math expression %q: %+v", expr, err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		log.Fatalf("could not close output file: %+v", err)
 	}
 }
