@@ -1,6 +1,8 @@
 # latex
 
+[![go.dev reference](https://pkg.go.dev/badge/github.com/go-latex/latex)](https://pkg.go.dev/github.com/go-latex/latex)
 [![GitHub release](https://img.shields.io/github/release/go-latex/latex.svg)](https://github.com/go-latex/latex/releases)
+[![CI](https://github.com/go-latex/latex/workflows/CI/badge.svg)](https://github.com/go-latex/latex/actions)
 [![Build Status](https://travis-ci.org/go-latex/latex.svg?branch=master)](https://travis-ci.org/go-latex/latex)
 [![codecov](https://codecov.io/gh/go-latex/latex/branch/master/graph/badge.svg)](https://codecov.io/gh/go-latex/latex)
 [![GoDoc](https://godoc.org/github.com/go-latex/latex?status.svg)](https://godoc.org/github.com/go-latex/latex)
