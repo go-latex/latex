@@ -42,6 +42,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Install Linux packages
+      if: matrix.platform == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -qq pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-dev libxkbcommon-x11-dev libgles2-mesa-dev libegl1-mesa-dev libffi-dev libxcursor-dev xvfb xdotool
+        # start a virtual frame buffer
+        Xvfb :99 -screen 0 1920x1024x24 &
+
     - name: Build-Linux
       if: matrix.platform == 'ubuntu-latest'
       run: |
