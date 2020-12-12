@@ -78,8 +78,8 @@ func (be *Backend) RenderRectFilled(x1, y1, x2, y2 float64) {
 }
 
 // Metrics returns the metrics.
-func (ttf *Backend) Metrics(symbol string, fnt font.Font, dpi float64, math bool) font.Metrics {
-	return ttf.getInfo(symbol, fnt, dpi, math).metrics
+func (be *Backend) Metrics(symbol string, fnt font.Font, dpi float64, math bool) font.Metrics {
+	return be.getInfo(symbol, fnt, dpi, math).metrics
 }
 
 func (be *Backend) getInfo(symbol string, fnt font.Font, dpi float64, math bool) ttfVal {
