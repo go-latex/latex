@@ -27,9 +27,15 @@ func main() {
 		dpi  = flag.Float64("dpi", 72, "dots-per-inch to use")
 		size = flag.Float64("font-size", 12, "font size to use")
 		out  = flag.String("o", "out.png", "path to output file")
+		gui  = flag.Bool("gui", false, "enable GUI mode")
 	)
 
 	flag.Parse()
+
+	if *gui {
+		runGio()
+		return
+	}
 
 	if flag.NArg() != 1 {
 		flag.Usage()
@@ -47,7 +53,7 @@ func main() {
 	defer f.Close()
 
 	dst := drawimg.NewRenderer(f)
-	err = mtex.Render(dst, expr, *size, *dpi, nil)
+	err = mtex.Render(dst, expr, *size, *dpi, lmromanFonts())
 	if err != nil {
 		log.Fatalf("could not render math expression %q: %+v", expr, err)
 	}
