@@ -71,8 +71,10 @@ func drawGlyph(ctx *gg.Context, dpi float64, op drawtex.GlyphOp) {
 	defer face.Close()
 	ctx.SetFontFace(face)
 
-	x := op.X * dpi / 72
-	y := op.Y * dpi / 72
+	dpi /= 72
+
+	x := op.X * dpi
+	y := op.Y * dpi
 	//	log.Printf("draw-glyph: %q w=%g, h=%g x=%g, y=%g, size=%v",
 	//		op.Glyph.Symbol,
 	//		w, h, x, y, op.Glyph.Size,
@@ -81,12 +83,13 @@ func drawGlyph(ctx *gg.Context, dpi float64, op drawtex.GlyphOp) {
 }
 
 func drawRect(ctx *gg.Context, dpi float64, op drawtex.RectOp) {
+	dpi /= 72
 	ctx.NewSubPath()
-	ctx.MoveTo(op.X1*dpi/72, op.Y1*dpi/72)
-	ctx.LineTo(op.X2*dpi/72, op.Y1*dpi/72)
-	ctx.LineTo(op.X2*dpi/72, op.Y2*dpi/72)
-	ctx.LineTo(op.X1*dpi/72, op.Y2*dpi/72)
-	ctx.LineTo(op.X1*dpi/72, op.Y1*dpi/72)
+	ctx.MoveTo(op.X1*dpi, op.Y1*dpi)
+	ctx.LineTo(op.X2*dpi, op.Y1*dpi)
+	ctx.LineTo(op.X2*dpi, op.Y2*dpi)
+	ctx.LineTo(op.X1*dpi, op.Y2*dpi)
+	ctx.LineTo(op.X1*dpi, op.Y1*dpi)
 	ctx.ClosePath()
 	ctx.Fill()
 	//	log.Printf("draw-rect: pt1=(%g, %g) -> (%g, %g)", op.X1, op.Y1, op.X2, op.Y2)
