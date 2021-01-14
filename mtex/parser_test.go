@@ -47,6 +47,36 @@ func TestParse(t *testing.T) {
 			h:    7.59375,
 			d:    0.140625,
 		},
+		{
+			expr: `$1.1$`,
+			w:    15.9033203125,
+			h:    7.296875,
+			d:    0.0,
+		},
+		{
+			expr: `$1.$`,
+			w:    11.4892578125,
+			h:    7.296875,
+			d:    0.0,
+		},
+		{
+			expr: `$.2$`,
+			w:    11.4892578125,
+			h:    7.421875,
+			d:    0.0,
+		},
+		{
+			expr: `$.$`,
+			w:    5.126953125,
+			h:    1.234375,
+			d:    0.0,
+		},
+		{
+			expr: `$x.x$`,
+			w:    16.962890625,
+			h:    5.46875,
+			d:    0.0,
+		},
 		//{ // FIXME(sbinet): handler for '('
 		//	expr: `$\sigma = f(x)$`,
 		//	w:    35.8544921875,
@@ -141,6 +171,13 @@ func TestParse(t *testing.T) {
 		},
 	} {
 		t.Run("", func(t *testing.T) {
+			defer func() {
+				err := recover()
+				if err != nil {
+					t.Errorf("%q: panic: %+v", tc.expr, err)
+					panic(err)
+				}
+			}()
 			got, err := Parse(tc.expr, ftsize, dpi, be)
 			if err != nil {
 				t.Fatalf("could not parse %q: %+v", tc.expr, err)
@@ -153,15 +190,15 @@ func TestParse(t *testing.T) {
 			)
 
 			if got, want := w, tc.w; got != want {
-				t.Fatalf("invalid width: got=%g, want=%g", got, want)
+				t.Fatalf("%q: invalid width: got=%g, want=%g", tc.expr, got, want)
 			}
 
 			if got, want := h, tc.h; !cmpEq(got, want) {
-				t.Fatalf("invalid height: got=%g, want=%g", got, want)
+				t.Fatalf("%q: invalid height: got=%g, want=%g", tc.expr, got, want)
 			}
 
 			if got, want := d, tc.d; !cmpEq(got, want) {
-				t.Fatalf("invalid depth: got=%g, want=%g", got, want)
+				t.Fatalf("%q: invalid depth: got=%g, want=%g", tc.expr, got, want)
 			}
 		})
 	}

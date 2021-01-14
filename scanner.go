@@ -87,7 +87,7 @@ func (s *texScanner) scan() token.Token {
 		}
 
 	case '$', '_', '=', '<', '>', '^', '/', '*', '-', '+',
-		'!', '?', '\'', ':':
+		'!', '?', '\'', ':', ',', ';', '.':
 		return token.Token{
 			Kind: token.Symbol,
 			Pos:  pos,
