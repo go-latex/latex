@@ -123,7 +123,7 @@ fonts = [
 symbols = list(string.ascii_letters) + list(string.digits) + \
 	["\\"+k for k in mtex.tex2uni.keys()] + [
 	"é",
-	" ", "=", "+", "-", "(", ")", "{", "}", "<", ">",
+	" ", "=", "+", "-", "(", ")", "{", "}", "<", ">", "."
 	]
 
 db = []
