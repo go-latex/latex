@@ -52,8 +52,13 @@ func main() {
 	}
 	defer f.Close()
 
+	fnts := lmromanFonts()
+	if useLiberation {
+		fnts = liberationFonts()
+	}
+
 	dst := drawimg.NewRenderer(f)
-	err = mtex.Render(dst, expr, *size, *dpi, lmromanFonts())
+	err = mtex.Render(dst, expr, *size, *dpi, fnts)
 	if err != nil {
 		log.Fatalf("could not render math expression %q: %+v", expr, err)
 	}
