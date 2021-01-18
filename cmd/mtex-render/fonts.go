@@ -18,69 +18,18 @@ import (
 	"github.com/go-fonts/liberation/liberationserifbolditalic"
 	"github.com/go-fonts/liberation/liberationserifitalic"
 	"github.com/go-fonts/liberation/liberationserifregular"
-	"golang.org/x/image/font/sfnt"
 
+	"github.com/go-latex/latex/font/liberation"
+	"github.com/go-latex/latex/font/lm"
 	"github.com/go-latex/latex/font/ttf"
 )
 
 func liberationFonts() *ttf.Fonts {
-	rm, err := sfnt.Parse(liberationserifregular.TTF)
-	if err != nil {
-		log.Fatalf("could not parse fonts: %+v", err)
-	}
-
-	it, err := sfnt.Parse(liberationserifitalic.TTF)
-	if err != nil {
-		log.Fatalf("could not parse fonts: %+v", err)
-	}
-
-	bf, err := sfnt.Parse(liberationserifbold.TTF)
-	if err != nil {
-		log.Fatalf("could not parse fonts: %+v", err)
-	}
-
-	bfit, err := sfnt.Parse(liberationserifbolditalic.TTF)
-	if err != nil {
-		log.Fatalf("could not parse fonts: %+v", err)
-	}
-
-	return &ttf.Fonts{
-		Default: rm,
-		Rm:      rm,
-		It:      it,
-		Bf:      bf,
-		BfIt:    bfit,
-	}
+	return liberation.Fonts()
 }
 
 func lmromanFonts() *ttf.Fonts {
-	rm, err := sfnt.Parse(lmromanregular.TTF)
-	if err != nil {
-		log.Fatalf("could not parse fonts: %+v", err)
-	}
-
-	it, err := sfnt.Parse(lmromanitalic.TTF)
-	if err != nil {
-		log.Fatalf("could not parse fonts: %+v", err)
-	}
-
-	bf, err := sfnt.Parse(lmromanbold.TTF)
-	if err != nil {
-		log.Fatalf("could not parse fonts: %+v", err)
-	}
-
-	bfit, err := sfnt.Parse(lmromanbolditalic.TTF)
-	if err != nil {
-		log.Fatalf("could not parse fonts: %+v", err)
-	}
-
-	return &ttf.Fonts{
-		Default: rm,
-		Rm:      rm,
-		It:      it,
-		Bf:      bf,
-		BfIt:    bfit,
-	}
+	return lm.Fonts()
 }
 
 func registerFont(fnt text.Font, name string, raw []byte) text.FontFace {
