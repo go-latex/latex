@@ -289,7 +289,8 @@ func newGioRenderer(gtx C, th *material.Theme, txt string) *gioRenderer {
 	}
 	scale := float32(th.TextSize.V) / float32(ppem)
 
-	r.offset = f32.Pt(0, -scale*float32(met.Height-met.Ascent))
+	// FIXME(sbinet): find out where these -1 offsets come from.
+	r.offset = f32.Pt(-1, -scale*float32(met.Height-met.Ascent)-1)
 	return &r
 }
 
