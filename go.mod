@@ -3,7 +3,7 @@ module github.com/go-latex/latex
 go 1.13
 
 require (
-	gioui.org v0.0.0-20210118095710-eea1dbc17620
+	gioui.org v0.0.0-20210204101020-403f01655a36
 	github.com/fogleman/gg v1.3.0
 	github.com/go-fonts/dejavu v0.1.0
 	github.com/go-fonts/latin-modern v0.2.0
