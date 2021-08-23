@@ -6,7 +6,7 @@ package drawimg_test
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/go-fonts/latin-modern/lmroman12bold"
@@ -35,7 +35,7 @@ func TestRenderer(t *testing.T) {
 
 	load := func(name string) []byte {
 		name = "testdata/" + name + "_golden.png"
-		raw, err := ioutil.ReadFile(name)
+		raw, err := os.ReadFile(name)
 		if err != nil {
 			t.Fatalf("could not read file %q: %+v", name, err)
 		}
@@ -87,7 +87,7 @@ func TestRenderer(t *testing.T) {
 
 					name := font + "_" + tc.name
 					if got, want := out.Bytes(), load(name); !bytes.Equal(got, want) {
-						err := ioutil.WriteFile("testdata/"+name+".png", got, 0644)
+						err := os.WriteFile("testdata/"+name+".png", got, 0644)
 						if err != nil {
 							t.Fatalf("could not create output file: %+v", err)
 						}
