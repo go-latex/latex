@@ -9,6 +9,19 @@
 
 `latex` is a package holding Go tools for [LaTeX](https://www.latex-project.org/).
 
+`latex` is supposed to provide features akin to `MathJax` or `matplotlib`'s `TeX` capabilities.
+_ie:_ it is supposed to be able to draw mathematical equations, in pure-Go.
+
+`latex` is *NOT SUPPOSED* to be a complete typesetting system like `LaTeX` or `TeX`.
+
+For this, please take look at:
+
+- [Star-TeX](https://star-tex.org)
+- [Star-TeX (git repo)](https://git.sr.ht/~sbinet/star-tex)
+
+Eventually, `go-latex/latex` might just use `star-tex.org/...` to provide the `MathJax`-like capabilities.
+(once `star-tex.org/...` is ready and exports a nice Go API.)
+
 ## Installation
 
 ```
@@ -20,6 +33,41 @@ $> go get github.com/go-latex/latex/...
 Documentation is served by [godoc](https://godoc.org), here:
 
 - [godoc.org/github.com/go-latex/latex](https://godoc.org/github.com/go-latex/latex)
+
+The main use case for `go-latex/latex` is to draw a mathematical equation.
+This is typically achieved via the `latex/mtex.Render` function that knows how to render mathematical `TeX` equations to a renderer interface.
+
+### Example
+
+```go
+package main
+
+import (
+	"os"
+
+	"github.com/go-latex/latex/drawtex/drawimg"
+	"github.com/go-latex/latex/mtex"
+)
+
+func main() {
+	f, err := os.Create("output.png")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	dst := drawimg.NewRenderer(f)
+	err = mtex.Render(dst, `$f(x) = \frac{\sqrt{x +20}}{2\pi} +\hbar \sum y\partial y$`, 12, 72, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		panic(err)
+	}
+}
+```
 
 ## LICENSE
 
