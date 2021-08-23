@@ -3,7 +3,7 @@ module github.com/go-latex/latex/cmd/mtex-render
 go 1.16
 
 require (
-	gioui.org v0.0.0-20210118095710-eea1dbc17620
+	gioui.org v0.0.0-20210822154628-43a7030f6e0b
 	github.com/go-fonts/latin-modern v0.2.0
 	github.com/go-fonts/liberation v0.2.0
 	github.com/go-latex/latex v0.0.0-20210118090644-fa023287daff
