@@ -1,6 +1,6 @@
 module github.com/go-latex/latex
 
-go 1.13
+go 1.16
 
 require (
 	github.com/fogleman/gg v1.3.0

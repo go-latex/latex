@@ -1,6 +1,6 @@
 module github.com/go-latex/latex/cmd/mtex-render
 
-go 1.13
+go 1.16
 
 require (
 	gioui.org v0.0.0-20210118095710-eea1dbc17620
