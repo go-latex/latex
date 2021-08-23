@@ -9,7 +9,7 @@ import (
 	"log"
 
 	"github.com/go-latex/latex/drawtex"
-	pdf "github.com/phpdave11/gofpdf"
+	pdf "github.com/go-pdf/fpdf"
 )
 
 func Write(fname string, w, h float64, c *drawtex.Canvas) error {
