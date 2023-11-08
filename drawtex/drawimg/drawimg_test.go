@@ -16,7 +16,7 @@ import (
 	"github.com/go-fonts/liberation/liberationsansbolditalic"
 	"github.com/go-fonts/liberation/liberationsansitalic"
 	"github.com/go-fonts/liberation/liberationsansregular"
-	"github.com/go-fonts/stix/stix2math"
+	"github.com/go-fonts/stix/stix2mathregular"
 	"github.com/go-fonts/stix/stix2textbold"
 	"github.com/go-fonts/stix/stix2textbolditalic"
 	"github.com/go-fonts/stix/stix2textitalic"
@@ -125,7 +125,7 @@ func lmromanFonts(t *testing.T) *ttf.Fonts {
 }
 
 func stixFonts(t *testing.T) *ttf.Fonts {
-	rm, err := sfnt.Parse(stix2math.TTF)
+	rm, err := sfnt.Parse(stix2mathregular.TTF)
 	if err != nil {
 		t.Fatalf("could not parse fonts: %+v", err)
 	}
