@@ -18,17 +18,17 @@ jobs:
     name: Build
     strategy:
       matrix:
-        go-version: [1.17.x, 1.16.x]
+        go-version: [1.21.x, 1.20.x]
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
     - name: Install Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v4
       with:
         go-version: ${{ matrix.go-version }}
  
     - name: Cache-Go
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: |
             ~/go/pkg/mod              # Module download cache
@@ -40,7 +40,7 @@ jobs:
           ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
  
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install Linux packages
       if: matrix.platform == 'ubuntu-latest'
@@ -80,6 +80,13 @@ jobs:
       run: |
         go run ./ci/run-tests.go $TAGS
 
+    - name: static-check
+      uses: dominikh/staticcheck-action@v1
+      with:
+        install-go: false
+        cache-key: ${{ matrix.platform }}
+        version: "2023.1.5"
+
     - name: Upload-Coverage
       if: matrix.platform == 'ubuntu-latest'
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v3
