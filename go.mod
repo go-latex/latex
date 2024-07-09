@@ -3,7 +3,7 @@ module github.com/go-latex/latex
 go 1.19
 
 require (
-	github.com/fogleman/gg v1.3.0
+	git.sr.ht/~sbinet/gg v0.5.0
 	github.com/go-fonts/dejavu v0.3.4
 	github.com/go-fonts/latin-modern v0.3.3
 	github.com/go-fonts/liberation v0.3.3
@@ -13,6 +13,8 @@ require (
 )
 
 require (
+	github.com/campoy/embedmd v1.0.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 )

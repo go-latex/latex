@@ -14,7 +14,7 @@ import (
 	"io"
 	"math"
 
-	"github.com/fogleman/gg"
+	"git.sr.ht/~sbinet/gg"
 	"github.com/go-latex/latex/drawtex"
 	"github.com/go-latex/latex/mtex"
 	"golang.org/x/image/font"
