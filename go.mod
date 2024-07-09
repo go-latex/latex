@@ -1,6 +1,6 @@
 module github.com/go-latex/latex
 
-go 1.19
+go 1.21
 
 require (
 	git.sr.ht/~sbinet/gg v0.5.0
